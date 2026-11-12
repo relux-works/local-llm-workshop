@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Квантовая химчистка — чистим одежду сразу во всех параллельных вселенных</title>
+<meta name="description" content="Квантовая химчистка: пятно устраняется во всех ветвах мультивселенной одновременно. 12 измерений отбеливания, доставка через туннель." />
+<style>
+  :root{
+    --bg:#05070f;
+    --bg-soft:#0a0f1e;
+    --panel:rgba(255,255,255,.045);
+    --panel-brd:rgba(255,255,255,.10);
+    --txt:#e8ecf7;
+    --muted:#8e9ab8;
+    --accent:#7ef0d0;
+    --accent-2:#8b7dff;
+    --accent-3:#ff7ad9;
+    --radius:20px;
+    --maxw:1180px;
+    --ease:cubic-bezier(.22,.75,.24,1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{margin:0;font-weight:650;letter-spacing:-.025em;line-height:1.12}
+  p{margin:0}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:#04121a}
+
+  /* ---------- фон-свечения ---------- */
+  .glow{
+    position:fixed;pointer-events:none;z-index:0;filter:blur(90px);opacity:.55;
+    will-change:transform;
+  }
+  .glow.a{width:52vw;height:52vw;left:-14vw;top:-10vw;background:radial-gradient(circle,#1c7f74,transparent 65%)}
+  .glow.b{width:46vw;height:46vw;right:-12vw;top:22vh;background:radial-gradient(circle,#3a2c8f,transparent 65%)}
+  .glow.c{width:60vw;height:60vw;left:20vw;bottom:-30vw;background:radial-gradient(circle,#7d2160,transparent 68%);opacity:.35}
+
+  .noise{
+    position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
+  }
+
+  /* ---------- навигация ---------- */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;gap:24px;
+    padding:14px clamp(16px,4vw,40px);
+    background:linear-gradient(to bottom,rgba(5,7,15,.85),rgba(5,7,15,0));
+    transition:background .4s var(--ease),backdrop-filter .4s var(--ease),border-color .4s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  header.nav.solid{
+    background:rgba(5,7,15,.72);
+    backdrop-filter:blur(16px) saturate(140%);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+    border-bottom-color:rgba(255,255,255,.07);
+  }
+  .brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:-.02em;font-size:16px;white-space:nowrap}
+  .brand svg{flex:0 0 auto}
+  .brand small{display:block;font-weight:400;font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  nav.links{margin-left:auto;display:flex;gap:6px;align-items:center}
+  nav.links a{
+    font-size:14.5px;color:var(--muted);padding:8px 13px;border-radius:999px;
+    transition:color .25s var(--ease),background .25s var(--ease);
+  }
+  nav.links a:hover{color:var(--txt);background:rgba(255,255,255,.06)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    padding:12px 22px;border-radius:999px;font-weight:600;font-size:15px;
+    border:1px solid var(--panel-brd);background:var(--panel);color:var(--txt);
+    cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease);
+  }
+  .btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.09)}
+  .btn.primary{
+    background:linear-gradient(120deg,var(--accent),var(--accent-2) 55%,var(--accent-3));
+    color:#06080f;border-color:transparent;
+    box-shadow:0 8px 30px -10px rgba(126,240,208,.55);
+  }
+  .btn.primary:hover{box-shadow:0 14px 42px -10px rgba(139,125,255,.7)}
+  .nav .btn{padding:10px 18px;font-size:14px}
+  @media(max-width:860px){nav.links{display:none}}
+
+  /* ---------- первый экран ---------- */
+  .hero{
+    position:relative;min-height:100svh;display:grid;align-items:center;
+    padding:96px clamp(16px,4vw,40px) 40px;z-index:2;
+  }
+  #scene{
+    position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;
+    touch-action:none;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(70% 60% at 70% 45%,transparent 35%,rgba(5,7,15,.55) 78%,rgba(5,7,15,.9) 100%),
+      linear-gradient(to bottom,rgba(5,7,15,.55),transparent 30%,transparent 62%,var(--bg) 99%);
+  }
+  .hero-inner{position:relative;z-index:3;max-width:var(--maxw);margin:0 auto;width:100%}
+  .hero-copy{max-width:610px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:9px;
+    font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+    padding:7px 14px;border:1px solid rgba(126,240,208,.3);border-radius:999px;
+    background:rgba(126,240,208,.07);margin-bottom:22px;
+  }
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(126,240,208,.7);animation:pulse 2.4s infinite}
+  @keyframes pulse{70%{box-shadow:0 0 0 11px rgba(126,240,208,0)}100%{box-shadow:0 0 0 0 rgba(126,240,208,0)}}
+  h1{font-size:clamp(2.3rem,6.2vw,4.35rem);margin-bottom:20px}
+  h1 .grad{
+    background:linear-gradient(100deg,var(--accent),var(--accent-2) 48%,var(--accent-3));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lead{color:#aab6d2;font-size:clamp(1rem,1.6vw,1.16rem);max-width:520px;margin-bottom:32px}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-meta{display:flex;gap:clamp(18px,4vw,46px);margin-top:46px;flex-wrap:wrap}
+  .stat b{display:block;font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700;letter-spacing:-.03em}
+  .stat span{font-size:13px;color:var(--muted)}
+  .scroll-hint{
+    position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:3;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+  }
+  .scroll-hint i{display:block;width:1px;height:44px;background:linear-gradient(var(--accent),transparent);animation:drop 2.2s var(--ease) infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  @media(max-width:640px){.scroll-hint{display:none}}
+
+  /* ---------- общие секции ---------- */
+  section{position:relative;z-index:2;padding:clamp(70px,10vw,130px) clamp(16px,4vw,40px)}
+  .wrap{max-width:var(--maxw);margin:0 auto}
+  .sec-head{max-width:720px;margin-bottom:clamp(36px,5vw,58px)}
+  .kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-2);margin-bottom:14px;font-weight:600}
+  h2{font-size:clamp(1.85rem,4.2vw,2.9rem)}
+  .sec-head p{color:var(--muted);margin-top:16px;font-size:1.03rem}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(34px);transition:opacity .85s var(--ease),transform .85s var(--ease);transition-delay:var(--d,0ms)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .pulse,.scroll-hint i{animation:none}
+  }
+
+  /* ---------- карточки услуг ---------- */
+  .grid{display:grid;gap:18px}
+  .grid.svc{grid-template-columns:repeat(auto-fit,minmax(268px,1fr))}
+  .card{
+    position:relative;overflow:hidden;
+    background:var(--panel);border:1px solid var(--panel-brd);border-radius:var(--radius);
+    padding:26px;transition:transform .45s var(--ease),border-color .45s var(--ease),background .45s var(--ease);
+  }
+  .card::before{
+    content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),rgba(126,240,208,.14),transparent 62%);
+    opacity:0;transition:opacity .45s var(--ease);
+  }
+  .card:hover{transform:translateY(-6px);border-color:rgba(126,240,208,.32);background:rgba(255,255,255,.065)}
+  .card:hover::before{opacity:1}
+  .ic{
+    width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin-bottom:18px;
+    background:linear-gradient(140deg,rgba(126,240,208,.18),rgba(139,125,255,.18));
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .card h3{font-size:1.14rem;margin-bottom:9px}
+  .card p{color:var(--muted);font-size:14.8px}
+  .tag{
+    display:inline-block;margin-top:16px;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent);border:1px dashed rgba(126,240,208,.32);border-radius:8px;padding:4px 9px;
+  }
+
+  /* ---------- как это работает ---------- */
+  .steps{display:grid;gap:0;grid-template-columns:1fr;counter-reset:step}
+  .step{
+    display:grid;grid-template-columns:76px 1fr;gap:22px;align-items:start;
+    padding:26px 0;border-top:1px solid rgba(255,255,255,.08);
+  }
+  .step:last-child{border-bottom:1px solid rgba(255,255,255,.08)}
+  .num{
+    font-variant-numeric:tabular-nums;font-size:2.05rem;font-weight:700;letter-spacing:-.04em;
+    color:transparent;-webkit-text-stroke:1px rgba(232,236,247,.4);line-height:1;
+    transition:color .5s var(--ease),-webkit-text-stroke-color .5s var(--ease);
+  }
+  .step:hover .num{color:var(--accent);-webkit-text-stroke-color:transparent}
+  .step h3{font-size:1.16rem;margin-bottom:8px}
+  .step p{color:var(--muted);font-size:15px;max-width:640px}
+  .bar{grid-column:1/-1;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:20px;transform:scaleX(0);transform-origin:left;transition:transform 1.1s var(--ease)}
+  .step.in .bar{transform:scaleX(1)}
+  @media(max-width:560px){.step{grid-template-columns:56px 1fr;gap:16px}.num{font-size:1.5rem}}
+
+  /* ---------- тарифы ---------- */
+  .plans{grid-template-columns:repeat(auto-fit,minmax(272px,1fr));align-items:stretch}
+  .plan{display:flex;flex-direction:column;padding:30px 28px 32px}
+  .plan.pop{
+    background:linear-gradient(170deg,rgba(139,125,255,.16),rgba(126,240,208,.07) 60%,rgba(255,255,255,.03));
+    border-color:rgba(139,125,255,.45);
+    box-shadow:0 26px 70px -34px rgba(139,125,255,.75);
+  }
+  .badge{
+    position:absolute;top:18px;right:18px;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    background:linear-gradient(120deg,var(--accent),var(--accent-2));color:#06080f;font-weight:700;
+    padding:5px 10px;border-radius:999px;
+  }
+  .plan h3{font-size:1.05rem;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  .price{display:flex;align-items:baseline;gap:7px;margin:16px 0 4px}
+  .price b{font-size:clamp(2.1rem,4vw,2.7rem);font-weight:700;letter-spacing:-.04em}
+  .price s{color:var(--muted);font-size:14px;text-decoration-color:rgba(255,122,217,.7)}
+  .per{color:var(--muted);font-size:13px;margin-bottom:22px}
+  .plan ul{list-style:none;padding:0;margin:0 0 26px;display:grid;gap:11px;font-size:14.8px}
+  .plan li{display:grid;grid-template-columns:20px 1fr;gap:9px;align-items:start;color:#c3cbe0}
+  .plan li svg{margin-top:4px}
+  .plan .btn{margin-top:auto;width:100%}
+  .off{filter:grayscale(.5);opacity:.62}
+
+  /* ---------- отзывы ---------- */
+  .revs{grid-template-columns:repeat(auto-fit,minmax(276px,1fr))}
+  .rev .top{display:flex;align-items:center;gap:13px;margin-bottom:15px}
+  .avatar{width:44px;height:44px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;font-weight:700;font-size:15px;color:#06080f}
+  .rev .who b{display:block;font-size:15px}
+  .rev .who span{font-size:12.5px;color:var(--muted)}
+  .rev p{font-size:15px;color:#c6cee2}
+  .stars{display:flex;gap:3px;margin-top:14px;color:var(--accent)}
+
+  /* ---------- финальный блок ---------- */
+  .final{
+    text-align:center;border:1px solid var(--panel-brd);border-radius:28px;
+    padding:clamp(38px,6vw,70px) clamp(20px,5vw,60px);
+    background:
+      radial-gradient(120% 140% at 50% 0%,rgba(139,125,255,.20),transparent 62%),
+      linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  }
+  .final h2{margin-bottom:14px}
+  .final p{color:var(--muted);max-width:560px;margin:0 auto 28px}
+
+  /* ---------- футер ---------- */
+  footer{
+    position:relative;z-index:2;border-top:1px solid rgba(255,255,255,.08);
+    padding:clamp(44px,6vw,70px) clamp(16px,4vw,40px) 34px;background:rgba(3,5,11,.7)
+  }
+  .fgrid{max-width:var(--maxw);margin:0 auto;display:grid;gap:34px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .fgrid h4{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:15px}
+  .fgrid a,.fgrid p{display:block;color:#b3bcd4;font-size:14.5px;margin-bottom:9px;transition:color .25s var(--ease)}
+  .fgrid a:hover{color:var(--accent)}
+  .fbot{
+    max-width:var(--maxw);margin:38px auto 0;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);
+    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="glow a" id="glowA"></div>
+<div class="glow b" id="glowB"></div>
+<div class="glow c" id="glowC"></div>
+<svg class="noise" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#n)" opacity="0.5"/></svg>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <defs><linearGradient id="bg1" x1="0" y1="0" x2="32" y2="32">
+        <stop offset="0" stop-color="#7ef0d0"/><stop offset=".55" stop-color="#8b7dff"/><stop offset="1" stop-color="#ff7ad9"/>
+      </linearGradient></defs>
+      <circle cx="16" cy="16" r="13.2" stroke="url(#bg1)" stroke-width="1.6"/>
+      <ellipse cx="16" cy="16" rx="13.2" ry="5.4" stroke="url(#bg1)" stroke-width="1.2" opacity=".75" transform="rotate(28 16 16)"/>
+      <ellipse cx="16" cy="16" rx="13.2" ry="5.4" stroke="url(#bg1)" stroke-width="1.2" opacity=".55" transform="rotate(-34 16 16)"/>
+      <circle cx="16" cy="16" r="3.1" fill="url(#bg1)"/>
+    </svg>
+    <span>Квантовая химчистка<small>Мультивселенная · с 2019</small></span>
+  </a>
+  <nav class="links">
+    <a href="#services">Что мы делаем</a>
+    <a href="#how">Как это работает</a>
+    <a href="#pricing">Тарифы</a>
+    <a href="#reviews">Отзывы</a>
+  </nav>
+  <a class="btn primary" href="#pricing">Вызвать курьера</a>
+</header>
+
+<main id="top">
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow"><i class="pulse"></i> Коллапс пятен наблюдается у нас</span>
+        <h1>Чистим одежду сразу <span class="grad">во всех параллельных вселенных</span></h1>
+        <p class="lead">Пока вы читаете этот текст, в 11 024 соседних реальностях ваша рубашка уже чистая. Мы просто синхронизируем ветви в одну — ту, где пятен нет.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#pricing">Отправить вещь в суперпозицию</a>
+          <a class="btn" href="#how">Как это устроено ↓</a>
+        </div>
+        <div class="hero-meta">
+          <div class="stat"><b>11 024</b><span>ветвы в одном цикле</span></div>
+          <div class="stat"><b>0,3 с</b><span>время туннелирования</span></div>
+          <div class="stat"><b>99,97 %</b><span>вселенных без пятна</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint"><span>Листайте</span><i></i></div>
+  </section>
+
+  <!-- ============ ЧТО МЫ ДЕЛАЕМ ============ -->
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="kicker">Что мы делаем</div>
+        <h2>Шесть процедур против материи</h2>
+        <p>Каждая услуга выполняется одновременно во всех доступных ветвях. Если в какой-то вселенной вещь всё ещё грязная — мы просто в неё не возвращаемся.</p>
+      </div>
+      <div class="grid svc">
+        <article class="card reveal" style="--d:0ms">
+          <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="1.6" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg></div>
+          <h3>Квантовое отбеливание</h3>
+          <p>Фотон проходит через ткань во всех состояниях сразу и выбирает только те, где отражается белый. Жёлтый просто не рождается.</p>
+          <span class="tag">12 измерений</span>
+        </article>
+        <article class="card reveal" style="--d:70ms">
+          <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b7dff" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 1.8c3 3.6 3 16.8 0 20.4M12 1.8c-3 3.6-3 16.8 0 20.4M2.4 8.4c4.2 1.8 15 1.8 19.2 0M2.4 15.6c4.2-1.8 15-1.8 19.2 0"/></svg></div>
+          <h3>Удаление пятен из прошлого</h3>
+          <p>Мы находим ветву, где вы не пролили кофе, и аккуратно сшиваем её с вашей. Борщо́л остаётся в той реальности. Там ему и место.</p>
+          <span class="tag">Хронология II+</span>
+        </article>
+        <article class="card reveal" style="--d:140ms">
+          <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff7ad9" stroke-width="1.6" stroke-linecap="round"><path d="M4 20 20 4M8 4h12v12"/><circle cx="6" cy="18" r="2"/></svg></div>
+          <h3>Туннельная доставка</h3>
+          <p>Курьер не идёт к вам — он появляется у двери из складки пространства. Среднее время: 0,3 секунды и одно лёгкое чувство дежавю.</p>
+          <span class="tag">Без пробок</span>
+        </article>
+        <article class="card reveal" style="--d:0ms">
+          <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="1.6" stroke-linecap="round"><path d="M12 2.6 3.4 7.3v9.4L12 21.4l8.6-4.7V7.3z"/><path d="M3.4 7.3 12 12l8.6-4.7M12 12v9.4"/></svg></div>
+          <h3>Декогеренция ворса</h3>
+          <p>Ворс и катышки теряют связь с вашим свитером и спокойно распадаются на безобидные кварки. Ничего лишнего, ничего опасного.</p>
+          <span class="tag">Безопасно для шерсти</span>
+        </article>
+        <article class="card reveal" style="--d:70ms">
+          <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b7dff" stroke-width="1.6" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2"/><path d="M18 2.2v4h-4M6 21.8v-4h4"/></svg></div>
+          <h3>Запах суперпозиции</h3>
+          <p>Аромат «Озон после Большого взрыва» существует и не существует, пока вы не понюхаете. Нюхайте смело: пахнет хорошо в обеих ветвах.</p>
+          <span class="tag">12 ароматов</span>
+        </article>
+        <article class="card reveal" style="--d:140ms">
+          <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff7ad9" stroke-width="1.6" stroke-linecap="round"><rect x="3.2" y="5" width="17.6" height="14" rx="3"/><path d="M3.2 9.6h17.6M7.4 5v4.6"/></svg></div>
+          <h3>Страховка реальности</h3>
+          <p>Если вещь потеряется между вселенными, вы получите её копию из соседней ветвы. Отличие — максимум в одной пуговице.</p>
+          <span class="tag">Гарантия 1 год</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ КАК ЭТО РАБОТАЕТ ============ -->
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="kicker">Как это работает</div>
+        <h2>Четыре шага до чистоты</h2>
+        <p>Процесс полностью автоматизирован и не требует от вас знания квантовой механики. Мы всё сделаем за вас — и за ваши альтер-эго.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="num">01</div>
+          <div><h3>Вы оставляете заявку</h3><p>Указываете адрес, тип ткани и степень катастрофы. Алгоритм подбирает 11 024 ближайших ветвей с чистой версией вашей вещи.</p></div>
+          <div class="bar"></div>
+        </div>
+        <div class="step reveal">
+          <div class="num">02</div>
+          <div><h3>Курьер забирает артефакт</h3><p>Курьер проходит сквозь складку пространства у вашего порога. Вещь помещается в изолированную камеру и перестаёт отвечать наблюдателю.</p></div>
+          <div class="bar"></div>
+        </div>
+        <div class="step reveal">
+          <div class="num">03</div>
+          <div><h3>Суперпозиция стирки</h3><p>Одежда стирается во всех ветвах параллельно. Мы не выбираем лучшую — мы уничтожаем все, где она осталась грязной.</p></div>
+          <div class="bar"></div>
+        </div>
+        <div class="step reveal">
+          <div class="num">04</div>
+          <div><h3>Коллапс в чистую реальность</h3><p>Утром вы открываете дверь и видите пакет. В 99,97 % вселенных он уже там. Вы, скорее всего, именно в этой.</p></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ТАРИФЫ ============ -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="kicker">Тарифы</div>
+        <h2>Выберите свою ветвь</h2>
+        <p>Оплата списывается только в той реальности, где вы остались довольны. Во всех остальных — автоматически.</p>
+      </div>
+      <div class="grid plans">
+        <article class="card plan reveal" style="--d:0ms">
+          <h3>Локальная</h3>
+          <div class="price"><b>1 900 ₽</b></div>
+          <div class="per">за 1 вещь · до 3 ветвей</div>
+          <ul>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Очистка в вашей вселенной</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Ближайшие ветви: до 3</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Доставка складкой, 24 часа</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Аромат на выбор: 3 шт.</li>
+          </ul>
+          <a class="btn" href="#top">Начать с малого</a>
+        </article>
+
+        <article class="card plan pop reveal" style="--d:80ms">
+          <span class="badge">Выбор 68 % клиентов</span>
+          <h3>Мультивселенная</h3>
+          <div class="price"><b>4 900 ₽</b> <s>6 400 ₽</s></div>
+          <div class="per">за 1 вещь · 11 024 ветви</div>
+          <ul>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Полный коллапс пятна</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Все 11 024 ветви сразу</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Туннельная доставка за 0,3 с</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Удаление запаха из прошлого</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Отчёт о состоянии реальности</li>
+          </ul>
+          <a class="btn primary" href="#top">Выбрать эту ветвь</a>
+        </article>
+
+        <article class="card plan reveal" style="--d:160ms">
+          <h3>Омниверс</h3>
+          <div class="price"><b>∞ ₽</b></div>
+          <div class="per">подписка · без лимитов ветв</div>
+          <ul>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Всё из «Мультивселенной»</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Неограниченное число вещей</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Персональный наблюдатель 24/7</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ef0d0" stroke-width="3" stroke-linecap="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>Резервная копия гардероба</li>
+            <li class="off"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8e9ab8" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg><span style="color:var(--muted)">Чистка носков в 5-м измерении</span></li>
+          </ul>
+          <a class="btn" href="#top">Стать абсолютным</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ОТЗЫВЫ ============ -->
+  <section id="reviews">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="kicker">Отзывы</div>
+        <h2>Голоса из нескольких реальностей</h2>
+        <p>Мы публикуем отзывы во всех версиях сайта одновременно. Да, этот текст вы уже читали. Возможно.</p>
+      </div>
+      <div class="grid revs">
+        <article class="card rev reveal" style="--d:0ms">
+          <div class="top">
+            <div class="avatar" style="background:linear-gradient(135deg,#7ef0d0,#4bbfa8)">АК</div>
+            <div class="who"><b>Анна Ковалёва</b><span>физик-теоретик, Москва</span></div>
+          </div>
+          <p>«Поставила борщ на белую блузку в 19:40. В 19:41 блузка была чистая, а борщ — всё ещё на столе и очень даже съедобный. Я не понимаю, но я довольна.»</p>
+          <div class="stars">★★★★★</div>
+        </article>
+        <article class="card rev reveal" style="--d:80ms">
+          <div class="top">
+            <div class="avatar" style="background:linear-gradient(135deg,#8b7dff,#5a4fd6)">ДМ</div>
+            <div class="who"><b>Дмитрий Молчун</b><span>Курьер 3-го разряда</span></div>
+          </div>
+          <p>«Работаю второй год. Привык к дежавю только к четвёртой вселенной. Клиенты вежливые, правда иногда встречаются две версии одной клиентки — обе оставляют пять звёзд.»</p>
+          <div class="stars">★★★★★</div>
+        </article>
+        <article class="card rev reveal" style="--d:160ms">
+          <div class="top">
+            <div class="avatar" style="background:linear-gradient(135deg,#ff7ad9,#c8409f)">ЛШ</div>
+            <div class="who"><b>Лидия Шевцова</b><span>владелица гардероба из 8 копий</span></div>
+          </div>
+          <p>«Оформила „Омниверс“. Теперь у меня в каждой вселенной одинаковые чистые пальто. Соседка из параллельной дома жалуется — но это уже её проблема.»</p>
+          <div class="stars">★★★★★</div>
+        </article>
+        <article class="card rev reveal" style="--d:0ms">
+          <div class="top">
+            <div class="avatar" style="background:linear-gradient(135deg,#f0d07e,#c79a2e)">ОБ</div>
+            <div class="who"><b>Олег Барсов</b><span>журналист, «Вестник ветвей»</span></div>
+          </div>
+          <p>«Пришёл написать разоблачение. Ушёл с чистым пиджаком и подпиской. Репортаж не состоялся: в редакции моя версия уже всё написала и сдала.»</p>
+          <div class="stars">★★★★☆</div>
+        </article>
+        <article class="card rev reveal" style="--d:80ms">
+          <div class="top">
+            <div class="avatar" style="background:linear-gradient(135deg,#7ec3f0,#3d7fc4)">ЕГ</div>
+            <div class="who"><b>Елизавета Громова</b><span>мама трёх версий близнецов</span></div>
+          </div>
+          <p>«Каша из манки на комбинезоне исчезла вместе с воспоминанием о том, как она туда попала. Дети в ужасе, я в восторге. Рекомендую всем материнским вселенным.»</p>
+          <div class="stars">★★★★★</div>
+        </article>
+        <article class="card rev reveal" style="--d:160ms">
+          <div class="top">
+            <div class="avatar" style="background:linear-gradient(135deg,#a8f07e,#5aa83d)">ТВ</div>
+            <div class="who"><b>Тимур Вакс</b><span>Ver. 2 341 / Ver. 2 342</span></div>
+          </div>
+          <p>«Мы — одна и та же персона в двух ветвях, и оба отзыва написали честно. Единственная претензия: в одной вселенной пахнет озоном чуть сильнее. Разберитесь.»</p>
+          <div class="stars">★★★★☆</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section>
+    <div class="wrap">
+      <div class="final reveal">
+        <h2>Готовы наблюдать чистое?</h2>
+        <p>Оставьте заявку сейчас — и мы схлопнем вашу реальность в ту, где не нужно отстирывать. Первая вещь в новой вселенной бесплатно.</p>
+        <a class="btn primary" href="#pricing">Запустить коллапс пятен</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="fgrid">
+    <div>
+      <a class="brand" href="#top" style="margin-bottom:14px">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <circle cx="16" cy="16" r="13.2" stroke="#7ef0d0" stroke-width="1.6"/>
+          <ellipse cx="16" cy="16" rx="13.2" ry="5.4" stroke="#8b7dff" stroke-width="1.2" opacity=".8" transform="rotate(28 16 16)"/>
+          <circle cx="16" cy="16" r="3.1" fill="#ff7ad9"/>
+        </svg>
+        <span>Квантовая химчистка</span>
+      </a>
+      <p style="max-width:280px">Устраняем пятна во всех доступных ветвях пространства-времени. Лицензия Госстандарта мультивселенной №000-∞.</p>
+    </div>
+    <div>
+      <h4>Услуги</h4>
+      <a href="#services">Квантовое отбеливание</a>
+      <a href="#services">Удаление из прошлого</a>
+      <a href="#services">Туннельная доставка</a>
+      <a href="#services">Страховка реальности</a>
+    </div>
+    <div>
+      <h4>Компания</h4>
+      <a href="#how">Как это работает</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#top">Вакансии курьеров</a>
+    </div>
+    <div>
+      <h4>Связь</h4>
+      <p>ул. Де Бройля, 12, офис в суперпозиции</p>
+      <p>+7 (900) 000-11-02</p>
+      <p>hello@kvant-chistka.example</p>
+      <p>Ежедневно, пока вас нет дома</p>
+    </div>
+  </div>
+  <div class="fbot">
+    <span>© 2026 Квантовая химчистка. Все права защищены во всех вселенных.</span>
+    <span>Сайт может отличаться от его версии в соседней ветви.</span>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   3D-сцена: переливающийся стеклянный тор-узел,
+   дробящийся на копии при наведении
+   ============================================================ */
+const canvas = document.getElementById('scene');
+const hero = document.getElementById('hero');
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 120);
+camera.position.set(0, 0, 9);
+
+/* ---- процедурное окружение (без внешних картинок) ---- */
+function makeEnvTexture(){
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 256;
+  const g = c.getContext('2d');
+  const base = g.createLinearGradient(0,0,0,256);
+  base.addColorStop(0,'#0d1430'); base.addColorStop(.5,'#070b18'); base.addColorStop(1,'#02040a');
+  g.fillStyle = base; g.fillRect(0,0,512,256);
+  const blobs = [['#7ef0d0',110,80,130],['#8b7dff',330,70,150],['#ff7ad9',470,150,110],['#3fd0ff',200,190,120],['#ffffff',256,40,60]];
+  blobs.forEach(([col,x,y,r])=>{
+    const rg = g.createRadialGradient(x,y,0,x,y,r);
+    rg.addColorStop(0,col); rg.addColorStop(1,'rgba(0,0,0,0)');
+    g.globalAlpha = .85; g.fillStyle = rg; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill();
+  });
+  g.globalAlpha = 1;
+  // полосы «звёздного шума»
+  g.fillStyle = 'rgba(255,255,255,.45)';
+  for(let i=0;i<420;i++){
+    const x=Math.random()*512, y=Math.random()*256, s=Math.random()*1.4;
+    g.globalAlpha = Math.random()*.6;
+    g.fillRect(x,y,s,s);
+  }
+  g.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envTex = makeEnvTexture();
+const envMap = pmrem.fromEquirectangular(envTex).texture;
+scene.environment = envMap;
+
+/* ---- свет ---- */
+scene.add(new THREE.AmbientLight(0x334466, 0.6));
+const key = new THREE.PointLight(0x7ef0d0, 90, 40); key.position.set(5,4,6); scene.add(key);
+const fill = new THREE.PointLight(0x8b7dff, 70, 40); fill.position.set(-6,-2,4); scene.add(fill);
+const rim = new THREE.PointLight(0xff7ad9, 55, 40); rim.position.set(0,5,-6); scene.add(rim);
+
+/* ---- стеклянный тор-узел + копия (один BufferGeometry на всех) ---- */
+const knotGeo = new THREE.TorusKnotGeometry(1.35, 0.42, 220, 32, 2, 3);
+
+const glassMat = new THREE.MeshPhysicalMaterial({
+  color: new THREE.Color('#cfe9ff'),
+  metalness: 0.0,
+  roughness: 0.06,
+  transmission: 1.0,
+  thickness: 1.6,
+  ior: 1.55,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.06,
+  iridescence: 1.0,
+  iridescenceIOR: 1.35,
+  iridescenceThicknessRange: [120, 620],
+  attenuationColor: new THREE.Color('#4fd7c4'),
+  attenuationDistance: 3.2,
+  envMap: envMap,
+  envMapIntensity: 1.6,
+  transparent: true,
+  opacity: 1
+});
+
+const knot = new THREE.Mesh(knotGeo, glassMat);
+scene.add(knot);
+
+/* --- копии: дешёвый «призрачный» материал, появляются при наведении --- */
+const COPIES = 7;
+const clones = [];
+const ghostMatBase = new THREE.MeshPhysicalMaterial({
+  color: new THREE.Color('#9fd9ff'),
+  metalness: 0, roughness: 0.15,
+  transmission: 0.9, thickness: 0.8, ior: 1.4,
+  iridescence: 1, iridescenceIOR: 1.3,
+  transparent: true, opacity: 0, depthWrite: false,
+  envMap: envMap, envMapIntensity: 1.4
+});
+for(let i=0;i<COPIES;i++){
+  const m = ghostMatBase.clone();
+  m.color = new THREE.Color().setHSL((i/COPIES)*0.85 + 0.42, 0.8, 0.72);
+  const mesh = new THREE.Mesh(knotGeo, m);
+  mesh.scale.setScalar(0.86 + i*0.03);
+  mesh.visible = false;
+  const a = (i / COPIES) * Math.PI * 2;
+  mesh.userData = {
+    angle: a,
+    radius: 3.0 + i*0.28,
+    speed: 0.22 + i*0.045,
+    tilt: (i%3 - 1) * 0.55,
+    spin: 0.4 + i*0.11,
+    target: 0
+  };
+  scene.add(mesh);
+  clones.push(mesh);
+}
+
+/* --- каркас основного узла для «расщепления» --- */
+const wireMat = new THREE.MeshBasicMaterial({
+  color: 0x7ef0d0, wireframe:true, transparent:true, opacity:0, depthWrite:false
+});
+const wire = new THREE.Mesh(knotGeo, wireMat);
+scene.add(wire);
+
+/* ---- частицы-«кванты» ---- */
+const P = 900;
+const pPos = new Float32Array(P*3);
+const pSeed = new Float32Array(P);
+for(let i=0;i<P;i++){
+  const r = 6 + Math.random()*16;
+  const t = Math.random()*Math.PI*2;
+  const y = (Math.random()-0.5)*16;
+  pPos[i*3] = Math.cos(t)*r;
+  pPos[i*3+1] = y;
+  pPos[i*3+2] = Math.sin(t)*r - 4;
+  pSeed[i] = Math.random()*Math.PI*2;
+}
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
+
+function dotTexture(){
+  const s=64, c=document.createElement('canvas'); c.width=c.height=s;
+  const g=c.getContext('2d');
+  const rg=g.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+  rg.addColorStop(0,'rgba(255,255,255,1)');
+  rg.addColorStop(.35,'rgba(190,235,255,.6)');
+  rg.addColorStop(1,'rgba(255,255,255,0)');
+  g.fillStyle=rg; g.fillRect(0,0,s,s);
+  return new THREE.CanvasTexture(c);
+}
+const points = new THREE.Points(pGeo, new THREE.PointsMaterial({
+  size:0.09, map:dotTexture(), transparent:true, opacity:.75,
+  blending:THREE.AdditiveBlending, depthWrite:false, color:0x9fe8ff, sizeAttenuation:true
+}));
+scene.add(points);
+
+/* ---- кольца-орбиты ---- */
+const rings = new THREE.Group();
+for(let i=0;i<3;i++){
+  const r = 3.4 + i*0.9;
+  const g = new THREE.TorusGeometry(r, 0.006, 6, 180);
+  const m = new THREE.MeshBasicMaterial({
+    color: [0x7ef0d0,0x8b7dff,0xff7ad9][i], transparent:true, opacity:0.22
+  });
+  const mesh = new THREE.Mesh(g,m);
+  mesh.rotation.set(Math.PI/2 + (i-1)*0.5, i*0.6, 0);
+  rings.add(mesh);
+}
+scene.add(rings);
+
+/* ============================================================
+   Взаимодействие
+   ============================================================ */
+const pointer = new THREE.Vector2(0,0);      // нормализованный -1..1
+const smooth  = new THREE.Vector2(0,0);
+let hoverKnot = 0;                            // 0..1 «наведение на узел»
+let overHero = false;
+const ray = new THREE.Raycaster();
+const hoverSphere = new THREE.Mesh(knotGeo, new THREE.MeshBasicMaterial({visible:false}));
+hoverSphere.scale.setScalar(1.9);
+scene.add(hoverSphere);
+
+hero.addEventListener('pointermove', (e)=>{
+  const r = hero.getBoundingClientRect();
+  pointer.x = ((e.clientX - r.left)/r.width)*2 - 1;
+  pointer.y = -(((e.clientY - r.top)/r.height)*2 - 1);
+  overHero = true;
+}, {passive:true});
+hero.addEventListener('pointerleave', ()=>{ overHero=false; pointer.set(0,0); });
+
+// тач: тоже дробим
+hero.addEventListener('touchstart', ()=>{ overHero=true; }, {passive:true});
+hero.addEventListener('touchmove', (e)=>{
+  const t = e.touches[0]; if(!t) return;
+  const r = hero.getBoundingClientRect();
+  pointer.x = ((t.clientX - r.left)/r.width)*2 - 1;
+  pointer.y = -(((t.clientY - r.top)/r.height)*2 - 1);
+}, {passive:true});
+hero.addEventListener('touchend', ()=>{ overHero=false; }, {passive:true});
+
+/* ---- размеры ---- */
+function resize(){
+  const w = hero.clientWidth, h = hero.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h;
+  const narrow = w < 760;
+  camera.position.z = narrow ? 12.4 : 9;
+  camera.updateProjectionMatrix();
+  const s = narrow ? 0.78 : 1;
+  knot.scale.setScalar(s);
+  wire.scale.setScalar(s);
+  hoverSphere.scale.setScalar(s*1.9);
+}
+addEventListener('resize', resize);
+resize();
+
+/* ---- анимация ---- */
+const clock = new THREE.Clock();
+let introT = 0;
+
+function tick(){
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.04);
+  const t = clock.elapsedTime;
+  introT = Math.min(1, introT + dt/1.6);
+  const easeIntro = 1 - Math.pow(1-introT, 3);
+
+  // плавное следление за мышью
+  smooth.x += (pointer.x - smooth.x) * (1 - Math.pow(0.001, dt));
+  smooth.y += (pointer.y - smooth.y) * (1 - Math.pow(0.001, dt));
+
+  // попали ли лучом в узел
+  ray.setFromCamera(smooth, camera);
+  const hit = overHero && ray.intersectObject(hoverSphere, false).length > 0;
+  hoverKnot += ((hit ? 1 : 0) - hoverKnot) * (1 - Math.pow(0.004, dt));
+
+  // основной узел
+  const spin = reduce ? 0.05 : 1;
+  knot.rotation.x = t*0.18*spin + smooth.y*0.55;
+  knot.rotation.y = t*0.24*spin + smooth.x*0.85;
+  knot.rotation.z = Math.sin(t*0.3)*0.18;
+  const breathe = 1 + Math.sin(t*0.9)*0.02 + hoverKnot*0.06;
+  knot.scale.setScalar((innerWidth<760 ? 0.78 : 1) * breathe * easeIntro);
+  knot.position.x = smooth.x*0.55;
+  knot.position.y = smooth.y*0.4 + Math.sin(t*0.7)*0.08;
+  knot.position.z = hoverKnot*0.9;
+
+  // переливы
+  glassMat.iridescenceThicknessRange[1] = 380 + Math.sin(t*0.55)*300 + hoverKnot*420;
+  glassMat.envMapIntensity = 1.5 + Math.sin(t*0.8)*0.25 + hoverKnot*0.9;
+  glassMat.attenuationColor.setHSL(0.44 + Math.sin(t*0.22)*0.13, 0.65, 0.55);
+  glassMat.thickness = 1.5 + hoverKnot*1.3;
+
+  // каркас-расщепление
+  wire.rotation.copy(knot.rotation);
+  wire.position.copy(knot.position);
+  wire.scale.setScalar(knot.scale.x * (1 + hoverKnot*0.14));
+  wireMat.opacity = hoverKnot * 0.32;
+
+  // копии-двойники
+  clones.forEach((c,i)=>{
+    const u = c.userData;
+    c.visible = hoverKnot > 0.02;
+    u.target = hoverKnot;
+    const cur = c.material.opacity;
+    c.material.opacity = cur + (u.target * (0.30 + (i%3)*0.05) - cur) * (1 - Math.pow(0.01, dt));
+    const a = u.angle + t*u.speed*(reduce?0.15:1);
+    const R = u.radius * (0.35 + 0.65*hoverKnot);
+    c.position.set(
+      knot.position.x + Math.cos(a)*R,
+      knot.position.y + Math.sin(a*0.8 + u.tilt)*R*0.42,
+      knot.position.z + Math.sin(a)*R*0.6
+    );
+    c.rotation.x = knot.rotation.x*0.7 + t*u.spin*0.3;
+    c.rotation.y = knot.rotation.y*0.7 - t*u.spin*0.22;
+    const sc = (innerWidth<760 ? 0.78 : 1) * (0.55 + 0.45*hoverKnot) * (0.8 + i*0.028) * easeIntro;
+    c.scale.setScalar(sc);
+  });
+
+  // кольца
+  rings.rotation.y = t*0.06 + smooth.x*0.3;
+  rings.rotation.x = -0.2 + smooth.y*0.25;
+  rings.children.forEach((r,i)=>{
+    r.material.opacity = 0.16 + hoverKnot*0.35 * (1 - i*0.22) + Math.sin(t*1.2 + i)*0.04;
+    r.rotation.z += dt*(0.12 + i*0.05);
+  });
+
+  // частицы
+  const arr = pGeo.attributes.position.array;
+  for(let i=0;i<P;i++){
+    const s = pSeed[i];
+    arr[i*3+1] += Math.sin(t*0.5 + s)*dt*0.28;
+    const x = arr[i*3], z = arr[i*3+2];
+    const ang = dt*(0.03 + hoverKnot*0.09);
+    arr[i*3]   = x*Math.cos(ang) - z*Math.sin(ang);
+    arr[i*3+2] = x*Math.sin(ang) + z*Math.cos(ang);
+  }
+  pGeo.attributes.position.needsUpdate = true;
+  points.rotation.y = t*0.012;
+  points.material.size = 0.09 + hoverKnot*0.05;
+
+  // камера-параллакс
+  const camTargetX = smooth.x*1.15, camTargetY = smooth.y*0.8;
+  camera.position.x += (camTargetX - camera.position.x)*(1 - Math.pow(0.005, dt));
+  camera.position.y += (camTargetY - camera.position.y)*(1 - Math.pow(0.005, dt));
+  camera.lookAt(knot.position.x*0.35, knot.position.y*0.3, 0);
+
+  // огни живут своей жизнью
+  key.position.set(Math.cos(t*0.4)*6.5, 3 + Math.sin(t*0.35)*2, 5 + Math.sin(t*0.5)*2);
+  fill.position.set(Math.cos(t*0.31 + 2.1)*7, -2 + Math.cos(t*0.4)*2, 4 + Math.cos(t*0.6)*2);
+  rim.intensity = 45 + Math.sin(t*0.9)*22 + hoverKnot*40;
+
+  renderer.render(scene, camera);
+}
+tick();
+
+/* ============================================================
+   Появление при прокрутке + подсветка курсором
+   ============================================================ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+},{ threshold:0.14, rootMargin:'0px 0px -8% 0px' });
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('pointermove', (e)=>{
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', (e.clientX-r.left)+'px');
+    card.style.setProperty('--my', (e.clientY-r.top)+'px');
+  },{passive:true});
+});
+
+/* ---- шапка: фон при скролле ---- */
+const nav = document.getElementById('nav');
+const onScroll = ()=> nav.classList.toggle('solid', scrollY > 40);
+addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+/* ---- лёгкий параллакс фоновых свечений ---- */
+const glows = [document.getElementById('glowA'), document.getElementById('glowB'), document.getElementById('glowC')];
+let rafId = null;
+addEventListener('scroll', ()=>{
+  if(rafId) return;
+  rafId = requestAnimationFrame(()=>{
+    const y = scrollY;
+    glows.forEach((g,i)=>{ if(g) g.style.transform = `translate3d(0, ${y * (0.05 + i*0.035) * (i===1?-1:1)}px, 0)`; });
+    rafId = null;
+  });
+},{passive:true});
+
+/* ---- плавные якоря с учётом шапки ---- */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', ev=>{
+    const id = a.getAttribute('href');
+    if(id.length < 2) return;
+    const el = document.querySelector(id);
+    if(!el) return;
+    ev.preventDefault();
+    const top = id === '#top' ? 0 : el.getBoundingClientRect().top + scrollY - 70;
+    scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

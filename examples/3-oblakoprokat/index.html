@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Облакопрокат — аренда настоящих облаков</title>
+<meta name="description" content="«Облакопрокат» — аренда настоящих облаков для свадеб, фестивалей и киносъёмок. Доставка, крепление, гарантия осадков.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080a14'/%3E%3Cg fill='%23dfe9ff'%3E%3Ccircle cx='26' cy='36' r='11'/%3E%3Ccircle cx='38' cy='31' r='13'/%3E%3Ccircle cx='45' cy='39' r='9'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#06070e;
+    --bg-soft:#0a0c17;
+    --panel:#101425;
+    --panel-2:#141830;
+    --line:rgba(150,170,235,.14);
+    --text:#e9ecff;
+    --muted:#98a1c4;
+    --muted-2:#6d77a0;
+    --accent:#7cc4ff;
+    --accent-2:#c99cff;
+    --accent-3:#ffd28a;
+    --radius:18px;
+    --maxw:1180px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Inter","SF Pro Display","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    letter-spacing:-.011em;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:rgba(124,196,255,.28)}
+
+  h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.035em;line-height:1.08}
+  h1{font-size:clamp(2.4rem,6.4vw,4.6rem)}
+  h2{font-size:clamp(1.9rem,4.2vw,3rem)}
+  h3{font-size:clamp(1.1rem,1.6vw,1.35rem);letter-spacing:-.02em}
+  p{margin:0}
+  a{color:inherit;text-decoration:none}
+  img,svg{display:block;max-width:100%}
+
+  .wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(18px,4vw,40px)}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:.55rem;
+    font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);
+  }
+  .eyebrow::before{
+    content:"";width:26px;height:1px;background:linear-gradient(90deg,transparent,var(--accent));
+  }
+  .lead{color:var(--muted);font-size:clamp(1rem,1.35vw,1.15rem);max-width:62ch}
+
+  /* ---------- навигация ---------- */
+  .nav{
+    position:fixed;inset:0 0 auto 0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:14px clamp(18px,4vw,40px);
+    background:rgba(6,7,14,0);
+    border-bottom:1px solid transparent;
+    transition:background .4s var(--ease),border-color .4s var(--ease),backdrop-filter .4s var(--ease);
+  }
+  .nav.is-stuck{
+    background:rgba(6,7,14,.72);
+    backdrop-filter:blur(16px) saturate(160%);
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    border-bottom-color:var(--line);
+  }
+  .logo{display:flex;align-items:center;gap:11px;font-weight:600;letter-spacing:-.03em;font-size:1.06rem}
+  .logo-mark{
+    width:34px;height:34px;border-radius:11px;flex:none;
+    background:radial-gradient(120% 120% at 30% 20%,#2b3564,#0d1024 70%);
+    border:1px solid rgba(160,190,255,.22);
+    display:grid;place-items:center;
+    box-shadow:0 6px 22px -10px rgba(124,196,255,.8);
+  }
+  .logo small{display:block;font-size:.62rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);line-height:1}
+  .nav-links{display:flex;align-items:center;gap:6px}
+  .nav-links a{
+    position:relative;padding:9px 13px;border-radius:10px;font-size:.93rem;color:var(--muted);
+    transition:color .25s var(--ease),background .25s var(--ease);
+  }
+  .nav-links a:hover{color:var(--text);background:rgba(140,165,255,.08)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:.55em;
+    padding:.82em 1.5em;border-radius:999px;font-weight:600;font-size:.95rem;letter-spacing:-.01em;
+    border:1px solid transparent;cursor:pointer;white-space:nowrap;
+    transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease);
+  }
+  .btn-primary{
+    color:#06080f;
+    background:linear-gradient(140deg,#eaf3ff,#9ed2ff 45%,#c6a6ff);
+    box-shadow:0 12px 34px -14px rgba(150,190,255,.75),inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 44px -16px rgba(160,200,255,.9),inset 0 1px 0 rgba(255,255,255,.6)}
+  .btn-ghost{color:var(--text);border-color:rgba(160,185,255,.28);background:rgba(150,175,255,.06)}
+  .btn-ghost:hover{transform:translateY(-2px);border-color:rgba(180,205,255,.5);background:rgba(150,175,255,.12)}
+  .btn-sm{padding:.62em 1.15em;font-size:.88rem}
+
+  /* ---------- герой ---------- */
+  .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;isolation:isolate;overflow:hidden}
+  #scene{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:-2}
+  .hero::after{
+    content:"";position:absolute;inset:auto 0 0 0;height:46%;z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(6,7,14,.55) 45%,var(--bg));
+  }
+  .hero-inner{padding-block:clamp(96px,14vh,160px) clamp(46px,8vh,80px);width:100%}
+  .hero-card{max-width:720px}
+  .hero h1{margin-bottom:.42em;text-wrap:balance}
+  .hero h1 .grad{
+    background:linear-gradient(100deg,#ffffff,#a8d4ff 42%,#d8b6ff 78%,#ffe0b0);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero .lead{font-size:clamp(1.02rem,1.6vw,1.22rem);margin-bottom:2rem}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:clamp(30px,5vh,48px)}
+  .stats{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;
+    max-width:640px;
+  }
+  .stat{
+    padding:14px 16px;border-radius:14px;
+    background:rgba(11,14,26,.55);
+    border:1px solid var(--line);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  }
+  .stat b{display:block;font-size:clamp(1.15rem,2.2vw,1.6rem);font-weight:600;letter-spacing:-.04em}
+  .stat span{font-size:.79rem;color:var(--muted-2);line-height:1.35;display:block}
+
+  .scroll-hint{
+    position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-2);
+    z-index:1;
+  }
+  .scroll-hint i{display:block;width:1px;height:34px;background:linear-gradient(180deg,var(--accent),transparent);animation:drip 2.4s var(--ease) infinite}
+  @keyframes drip{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}46%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  .fallback{
+    position:absolute;inset:0;z-index:-3;
+    background:
+      radial-gradient(70% 55% at 20% 12%,rgba(124,196,255,.20),transparent 60%),
+      radial-gradient(60% 50% at 80% 22%,rgba(201,156,255,.18),transparent 62%),
+      radial-gradient(90% 60% at 50% 105%,rgba(255,170,110,.16),transparent 70%),
+      var(--bg);
+  }
+
+  /* ---------- секции ---------- */
+  section{position:relative}
+  .band{padding-block:clamp(72px,11vw,132px)}
+  .band-soft{background:linear-gradient(180deg,var(--bg),var(--bg-soft) 40%,var(--bg))}
+  .head{max-width:760px;margin-bottom:clamp(34px,5vw,58px)}
+  .head h2{margin:.5em 0 .55em;text-wrap:balance}
+
+  /* сетка услуг */
+  .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .card{
+    position:relative;overflow:hidden;
+    padding:26px 24px 28px;border-radius:var(--radius);
+    background:linear-gradient(180deg,var(--panel),#0c0f1d);
+    border:1px solid var(--line);
+    transition:transform .45s var(--ease),border-color .45s var(--ease),box-shadow .45s var(--ease);
+  }
+  .card::after{
+    content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;opacity:0;
+    background:radial-gradient(340px 200px at 20% 0%,rgba(124,196,255,.16),transparent 70%);
+    transition:opacity .45s var(--ease);
+  }
+  .card:hover{transform:translateY(-5px);border-color:rgba(150,185,255,.34);box-shadow:0 26px 60px -34px rgba(90,140,255,.75)}
+  .card:hover::after{opacity:1}
+  .card p{color:var(--muted);font-size:.95rem}
+  .ico{
+    width:46px;height:46px;border-radius:14px;margin-bottom:18px;
+    display:grid;place-items:center;color:var(--accent);
+    background:linear-gradient(150deg,rgba(124,196,255,.16),rgba(201,156,255,.10));
+    border:1px solid rgba(150,185,255,.2);
+  }
+  .tag{
+    display:inline-block;margin-bottom:12px;padding:4px 10px;border-radius:999px;
+    font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent-3);background:rgba(255,210,138,.1);border:1px solid rgba(255,210,138,.22);
+  }
+
+  /* как это работает */
+  .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;counter-reset:s}
+  .step{
+    position:relative;padding:26px 22px 26px;border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(20,24,48,.85),rgba(10,13,26,.85));
+    border:1px solid var(--line);
+  }
+  .step .num{
+    font-size:2.6rem;font-weight:600;letter-spacing:-.05em;line-height:1;
+    background:linear-gradient(180deg,rgba(124,196,255,.95),rgba(124,196,255,.12));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    margin-bottom:14px;
+  }
+  .step h3{margin-bottom:8px}
+  .step p{color:var(--muted);font-size:.93rem}
+  .step::after{
+    content:"";position:absolute;top:38px;right:-9px;width:18px;height:1px;
+    background:linear-gradient(90deg,rgba(124,196,255,.55),transparent);
+  }
+  .step:last-child::after{display:none}
+
+  /* тарифы */
+  .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+  .plan{
+    display:flex;flex-direction:column;
+    padding:30px 26px 28px;border-radius:22px;
+    background:linear-gradient(180deg,var(--panel),#0b0e1b);
+    border:1px solid var(--line);
+    transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .45s var(--ease);
+  }
+  .plan:hover{transform:translateY(-6px);border-color:rgba(150,185,255,.3)}
+  .plan h3{font-size:1.25rem}
+  .plan .desc{color:var(--muted-2);font-size:.88rem;margin-top:6px;min-height:2.9em}
+  .price{display:flex;align-items:baseline;gap:8px;margin:20px 0 4px}
+  .price b{font-size:clamp(1.9rem,3.4vw,2.5rem);font-weight:600;letter-spacing:-.045em}
+  .price s{color:var(--muted-2);font-size:.9rem;text-decoration:none}
+  .price em{font-style:normal;color:var(--muted-2);font-size:.85rem}
+  .plan ul{list-style:none;margin:20px 0 26px;padding:0;display:grid;gap:11px;font-size:.93rem;color:var(--muted)}
+  .plan li{display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:start}
+  .plan li svg{margin-top:.32em;color:var(--accent)}
+  .plan li.off{color:var(--muted-2)}
+  .plan li.off svg{color:var(--muted-2);opacity:.6}
+  .plan .btn{margin-top:auto;width:100%}
+  .plan.hot{
+    border-color:rgba(160,200,255,.42);
+    background:linear-gradient(180deg,#182045,#0d1128 60%);
+    box-shadow:0 40px 90px -50px rgba(120,170,255,.85);
+  }
+  .plan.hot::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(120% 60% at 50% -10%,rgba(140,190,255,.22),transparent 60%);
+  }
+  .plan{position:relative}
+  .hot-badge{
+    position:absolute;top:22px;right:22px;padding:5px 11px;border-radius:999px;
+    font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:#0a0c16;background:linear-gradient(120deg,#ffd28a,#ffb3c8);
+  }
+
+  /* отзывы */
+  .reviews{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .review{
+    padding:26px 24px;border-radius:var(--radius);
+    background:linear-gradient(180deg,var(--panel),#0b0e1b);
+    border:1px solid var(--line);
+    display:flex;flex-direction:column;gap:16px;
+    transition:transform .45s var(--ease),border-color .45s var(--ease);
+  }
+  .review:hover{transform:translateY(-4px);border-color:rgba(150,185,255,.28)}
+  .review blockquote{margin:0;font-size:.97rem;color:#d7ddf6}
+  .stars{display:flex;gap:3px;color:var(--accent-3)}
+  .who{display:flex;align-items:center;gap:12px;margin-top:auto}
+  .avatar{
+    width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;
+    font-size:.85rem;font-weight:600;color:#0a0d18;letter-spacing:-.02em;
+  }
+  .who b{display:block;font-size:.94rem;font-weight:600}
+  .who span{display:block;font-size:.8rem;color:var(--muted-2)}
+
+  /* CTA */
+  .cta-band{
+    position:relative;overflow:hidden;border-radius:26px;padding:clamp(34px,5vw,60px);
+    background:linear-gradient(140deg,#141b3c,#0a0d1c 60%);
+    border:1px solid rgba(160,190,255,.22);
+  }
+  .cta-band::before{
+    content:"";position:absolute;inset:-40% -10% auto auto;width:520px;height:520px;
+    background:radial-gradient(circle,rgba(124,196,255,.24),transparent 65%);filter:blur(8px);
+  }
+  .cta-band .inner{position:relative;display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:space-between}
+  .cta-band h2{max-width:18ch}
+
+  /* футер */
+  footer{border-top:1px solid var(--line);background:#05060d;padding-block:54px 30px}
+  .foot{display:grid;grid-template-columns:1.4fr repeat(3,minmax(0,1fr));gap:32px}
+  footer h4{font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);font-weight:600;margin-bottom:14px}
+  .flist{display:grid;gap:9px;font-size:.92rem;color:var(--muted)}
+  .flist a:hover{color:var(--accent)}
+  .foot-about p{color:var(--muted);font-size:.9rem;margin-top:14px;max-width:38ch}
+  .foot-bottom{
+    display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;
+    margin-top:44px;padding-top:22px;border-top:1px solid var(--line);
+    font-size:.82rem;color:var(--muted-2);
+  }
+
+  /* появление при прокрутке */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0ms)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (max-width:1000px){
+    .grid-3,.reviews{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .plans{grid-template-columns:1fr;max-width:520px;margin-inline:auto}
+    .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .step::after{display:none}
+    .foot{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:720px){
+    body{font-size:16px}
+    .nav-links{display:none}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3,.reviews{grid-template-columns:1fr}
+    .foot{grid-template-columns:1fr;gap:26px}
+    .cta-band .inner{flex-direction:column;align-items:flex-start}
+    .scroll-hint{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="logo" href="#top" aria-label="Облакопрокат — на главную">
+    <span class="logo-mark" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+        <g fill="#dfe9ff"><circle cx="24" cy="38" r="11"/><circle cx="36" cy="32" r="13"/><circle cx="45" cy="40" r="9"/><rect x="24" y="38" width="22" height="11" rx="5.5"/></g>
+      </svg>
+    </span>
+    <span>Облакопрокат<small>облака напрокат</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Разделы">
+    <a href="#services">Что мы делаем</a>
+    <a href="#how">Как это работает</a>
+    <a href="#plans">Тарифы</a>
+    <a href="#reviews">Отзывы</a>
+  </nav>
+  <a class="btn btn-primary btn-sm" href="#plans">Забронировать облако</a>
+</header>
+
+<main id="top">
+
+  <!-- ============ ГЕРОЙ ============ -->
+  <section class="hero">
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div class="fallback" aria-hidden="true"></div>
+
+    <div class="hero-inner wrap">
+      <div class="hero-card">
+        <span class="eyebrow reveal">с 2014 года · 37 городов · облака настоящие</span>
+        <h1 class="reveal" style="--d:80ms">Аренда <span class="grad">настоящих облаков</span> для вашего события</h1>
+        <p class="lead reveal" style="--d:160ms">
+          Мы поднимаем, держим и аккуратно опускаем живые кучевые облака над свадьбами, фестивалями
+          и съёмочными площадками. Мягкий свет, кинематографичная дымка и ноль непредсказуемых осадков —
+          всё по договору.
+        </p>
+        <div class="hero-cta reveal" style="--d:240ms">
+          <a class="btn btn-primary" href="#plans">Выбрать тариф</a>
+          <a class="btn btn-ghost" href="#how">Как это работает</a>
+        </div>
+        <div class="stats reveal" style="--d:320ms">
+          <div class="stat"><b>1&nbsp;240+</b><span>облаков поднято в небо</span></div>
+          <div class="stat"><b>8&nbsp;т</b><span>среднее облако в заказе</span></div>
+          <div class="stat"><b>−0.4°</b><span>приятная температура под ним</span></div>
+          <div class="stat"><b>98%</b><span>заказов без дождя</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true"><span>Листайте вниз</span><i></i></div>
+  </section>
+
+  <!-- ============ ЧТО МЫ ДЕЛАЕМ ============ -->
+  <section class="band band-soft" id="services">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow">Что мы делаем</span>
+        <h2>Полный цикл работы с небом</h2>
+        <p class="lead">От подбора облака нужной плотности до демонтажа после заката.
+          В штате — 14 метеорологов, 6 операторов лебёдок и один человек, который просто очень любит облака.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card reveal">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6.5 18a4.5 4.5 0 1 1 .9-8.9A6 6 0 0 1 18.6 11a3.5 3.5 0 0 1-.6 7H6.5Z"/>
+            </svg>
+          </div>
+          <h3>Свадебные облака</h3>
+          <p>Одно камерное облако на высоте 40–80 метров или целая аллея из семи. Даёт тот самый мягкий
+            рассеянный свет в 18:40 и идеально ложится в кадр на церемонии.</p>
+        </article>
+
+        <article class="card reveal" style="--d:70ms">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 20V9l8-5 8 5v11"/><path d="M4 20h16"/><path d="M9.5 20v-5h5v5"/>
+            </svg>
+          </div>
+          <h3>Фестивали и концерты</h3>
+          <p>Формируем облачный покров над сценой до 4 гектаров. Работаем с light-дизайнерами: облако
+            принимает лучи прожекторов как живой экран.</p>
+        </article>
+
+        <article class="card reveal" style="--d:140ms">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M8 6l-2 4M14 6l-2 4"/><path d="M20 14l1.5 3h-4l-1.5-3"/>
+            </svg>
+          </div>
+          <h3>Киносъёмки</h3>
+          <p>Контровой свет, «драматичное небо», управляемый проход облака через кадр с точностью до 4 секунд.
+            Смена висит на площадке весь съёмочный день.</p>
+        </article>
+
+        <article class="card reveal">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v18M12 21l-4-3M12 21l4-3"/><circle cx="12" cy="8" r="4"/>
+            </svg>
+          </div>
+          <h3>Управление погодой на площадке</h3>
+          <p>Держим пасмурную дымку в +31 или раздвигаем небо к моменту церемонии. Обещаем — не моросит,
+            если в договоре нет пункта «дождь по запросу».</p>
+        </article>
+
+        <article class="card reveal" style="--d:70ms">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 16l5-6 4 4 3-3 6 5"/><path d="M3 20h18"/>
+            </svg>
+          </div>
+          <h3>Аэросъёмка и драпиражение солнца</h3>
+          <p>Ставим облако как гигант софтбокс между солнцем и объектом. Контур мягкий, тени — как в
+            рекламном рендере.</p>
+        </article>
+
+        <article class="card reveal" style="--d:140ms">
+          <div class="ico" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l7 3.5v5c0 4.2-2.9 7.9-7 9-4.1-1.1-7-4.8-7-9v-5L12 3Z"/><path d="M9.2 12l2 2 3.6-3.8"/>
+            </svg>
+          </div>
+          <h3>Демонтаж и утилизация</h3>
+          <p>Аккуратно сдуваем облако обратно в стратосферу к 23:00 и оставляем после себя только чистое
+            небо и подпись в акте. Никаких следов на газоне.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ КАК ЭТО РАБОТАЕТ ============ -->
+  <section class="band" id="how">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow">Как это работает</span>
+        <h2>Четыре шага до собственного облака</h2>
+        <p class="lead">От заявки до момента, когда над вашей площадкой медленно проплывает восемь тонн
+          настоящей воды в подвешенном состоянии. Обычно хватает семи дней.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal">
+          <div class="num">01</div>
+          <h3>Заявка и замер неба</h3>
+          <p>Вы присылаете дату, площадку и референс неба. Наш метеоролог выезжает, замеряет ветер,
+            влажность и соседние линии электропередач.</p>
+        </div>
+        <div class="step reveal" style="--d:90ms">
+          <div class="num">02</div>
+          <h3>Подбор облака</h3>
+          <p>Выбираем класс: cumulus для пушистых кадров, stratus для ровной дымки, cirrus для
+            «дорогого» заката. Резервируем в ангаре №3.</p>
+        </div>
+        <div class="step reveal" style="--d:180ms">
+          <div class="num">03</div>
+          <h3>Подъём и крепление</h3>
+          <p>За 6 часов до события доставляем облако на площадку на четырёх тихих дронах-тягачах
+            и фиксируем на невидимой паутине из кевларовой нити.</p>
+        </div>
+        <div class="step reveal" style="--d:270ms">
+          <div class="num">04</div>
+          <h3>Событие и возврат</h3>
+          <p>Оператор следит за формой и плотностью весь ивент, подкручивая освещённость. После —
+            тихо уводим облако и присылаем акт и фотоотчёт.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ТАРИФЫ ============ -->
+  <section class="band band-soft" id="plans">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow">Тарифы</span>
+        <h2>Три способа снять облако</h2>
+        <p class="lead">Цены указаны за съёмочные сутки (12 часов) в пределах города. Выезд за город —
+          плюс 40 ₽ за километр дороги и один чай для оператора.</p>
+      </div>
+
+      <div class="plans">
+        <article class="plan reveal">
+          <h3>Дуновение</h3>
+          <p class="desc">Одно небольшое облако для камерной церемонии или фотосессии в парке.</p>
+          <div class="price"><b>45 000&nbsp;₽</b><em>/ сутки</em></div>
+          <s>52 000 ₽ без предоплаты</s>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Облако до 2,5 т, высота 30–50 м</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Один оператор на площадке</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Доставка и монтаж включены</li>
+            <li class="off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Управление формой в реальном времени</li>
+            <li class="off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Дождь по запросу</li>
+          </ul>
+          <a class="btn btn-ghost" href="#contact">Забронировать</a>
+        </article>
+
+        <article class="plan hot reveal" style="--d:90ms">
+          <span class="hot-badge">выбор 74% клиентов</span>
+          <h3>Кумулус</h3>
+          <p class="desc">Пушистое облако среднего класса — стандарт свадеб, клипов и рекламных смен.</p>
+          <div class="price"><b>120 000&nbsp;₽</b><em>/ сутки</em></div>
+          <s>145 000 ₽ в высокий сезон</s>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Облако 8–12 т, площадь до 1,5 га</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Живое управление формой и плотностью</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Проход через кадр по тайм-коду</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Лёгкая дымка и мягкий контровой свет</li>
+            <li class="off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Дождь по запросу</li>
+          </ul>
+          <a class="btn btn-primary" href="#contact">Забронировать облако</a>
+        </article>
+
+        <article class="plan reveal" style="--d:180ms">
+          <h3>Стратосфера</h3>
+          <p class="desc">Полное небо под ключ: несколько облачных ярусов и собственная метеослужба.</p>
+          <div class="price"><b>от 380 000&nbsp;₽</b><em>/ сутки</em></div>
+          <s>индивидуальная смета от 3 суток</s>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>До 40 т облачной массы, покров до 4 га</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Два яруса: кучевые + перистые</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Дождь по запросу и радуга за +35 000 ₽</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Выделенная бригада 6 человек и рация каждому</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Гарантия неба или возврат 100%</li>
+          </ul>
+          <a class="btn btn-ghost" href="#contact">Запросить смету</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ОТЗЫВЫ ============ -->
+  <section class="band" id="reviews">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow">Отзывы</span>
+        <h2>Небо на стороне клиентов</h2>
+        <p class="lead">Мы не просим писать отзывы — мы просим разрешения их опубликовать.
+          Ниже пять из ста сорока восьми.</p>
+      </div>
+
+      <div class="reviews">
+        <article class="review reveal">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Облако висело ровно над алтарём сорок минут и не сдвинулось ни на метр. Гости
+            думали, что это свет. Тёща до сих пор думает, что это было знамение.»</blockquote>
+          <div class="who">
+            <span class="avatar" style="background:linear-gradient(135deg,#9ed2ff,#c99cff)" aria-hidden="true">МА</span>
+            <span><b>Марина Астахова</b><span>свадебный организатор, Санкт-Петербург</span></span>
+          </div>
+        </article>
+
+        <article class="review reveal" style="--d:80ms">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Снимали ночную смену под дождём „по запросу“ — включили ровно в дубль 6 и выключили
+            по команде. Режисер попросил второе облако на следующий проект.»</blockquote>
+          <div class="who">
+            <span class="avatar" style="background:linear-gradient(135deg,#ffd28a,#ff9ab0)" aria-hidden="true">ДК</span>
+            <span><b>Данила Кравцов</b><span>оператор-постановщик, продакшн «Полдень»</span></span>
+          </div>
+        </article>
+
+        <article class="review reveal" style="--d:160ms">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«На фестивале над сценой висело четыре гектара. Свет лег так, что видео набрали
+            девять миллионов просмотров. Облако ушло за 12 минут до финального аккорда.»</blockquote>
+          <div class="who">
+            <span class="avatar" style="background:linear-gradient(135deg,#8ce0c8,#9ed2ff)" aria-hidden="true">ОВ</span>
+            <span><b>Ольга Верещагина</b><span>продюсер фестиваля «Полюс»</span></span>
+          </div>
+        </article>
+
+        <article class="review reveal" style="--d:60ms">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Арендовали одно маленькое облако на день рождения дочери. Оно проплыло над двором
+            и оставило после себя лёгкую морось. Дочь счастлива, соседи — тоже.»</blockquote>
+          <div class="who">
+            <span class="avatar" style="background:linear-gradient(135deg,#c99cff,#ffd28a)" aria-hidden="true">ТС</span>
+            <span><b>Тимур Салимов</b><span>частный клиент, Казань</span></span>
+          </div>
+        </article>
+
+        <article class="review reveal" style="--d:140ms">
+          <div class="stars" aria-label="Оценка 4 из 5">★★★★☆</div>
+          <blockquote>«Единственное замечание — облако село на крону старой липы. Бригада приехала за
+            25 минут и сняла его за 40. Небо вернули в исходное состояние.»</blockquote>
+          <div class="who">
+            <span class="avatar" style="background:linear-gradient(135deg,#9bd0b0,#e2e9ff)" aria-hidden="true">ЕП</span>
+            <span><b>Егор Панин</b><span>управляющий усадьбы «Липки»</span></span>
+          </div>
+        </article>
+
+        <article class="review reveal" style="--d:220ms">
+          <div class="stars" aria-label="Оценка 5 из 5">★★★★★</div>
+          <blockquote>«Мы сравнивали с генератором дыма. Дым стоит дешевле, но он не умеет медленно
+            дрейфовать на закате и вызывать у съёмочной группы мурашки.»</blockquote>
+          <div class="who">
+            <span class="avatar" style="background:linear-gradient(135deg,#a8b8ff,#ffd0a0)" aria-hidden="true">ЛР</span>
+            <span><b>Луиза Рахманова</b><span>креативный директор агентства «Кадр»</span></span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="band" id="contact" style="padding-top:0">
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <div class="inner">
+          <div>
+            <span class="eyebrow">Бронь</span>
+            <h2 style="margin-top:.45em">Небо свободно ещё&nbsp;11&nbsp;дней в этом месяце</h2>
+            <p class="lead" style="margin-top:.7em">Напишите дату и город — подберём облако, пришлём
+              расчёт и прогноз погоды, который мы реально исполним.</p>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px">
+            <a class="btn btn-primary" href="tel:+70000000000">+7 000 000-00-00</a>
+            <a class="btn btn-ghost" href="mailto:sky@oblakoprokat.example">sky@oblakoprokat.example</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="foot-about">
+        <a class="logo" href="#top">
+          <span class="logo-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+              <g fill="#dfe9ff"><circle cx="24" cy="38" r="11"/><circle cx="36" cy="32" r="13"/><circle cx="45" cy="40" r="9"/><rect x="24" y="38" width="22" height="11" rx="5.5"/></g>
+            </svg>
+          </span>
+          <span>Облакопрокат<small>облака напрокат</small></span>
+        </a>
+        <p>Аренда настоящих облаков для свадеб, фестивалей и киносъёмок. Работаем с 2014 года.
+          Все облака застрахованы, все птицы уведомлены.</p>
+      </div>
+      <div>
+        <h4>Услуги</h4>
+        <div class="flist">
+          <a href="#services">Свадьбы</a>
+          <a href="#services">Фестивали</a>
+          <a href="#services">Киносъёмки</a>
+          <a href="#services">Дождь по запросу</a>
+        </div>
+      </div>
+      <div>
+        <h4>Компания</h4>
+        <div class="flist">
+          <a href="#how">Как это работает</a>
+          <a href="#plans">Тарифы</a>
+          <a href="#reviews">Отзывы</a>
+          <a href="#contact">Контакты</a>
+        </div>
+      </div>
+      <div>
+        <h4>Ангар №3</h4>
+        <div class="flist">
+          <span>г. Небесногорск, ул. Кучевая, 12</span>
+          <span>Ежедневно 08:00 — 23:00</span>
+          <a href="mailto:sky@oblakoprokat.example">sky@oblakoprokat.example</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2014–2025 «Облакопрокат». Вымышленная компания, настоящие облака.</span>
+      <span>Политика конфиденциальности · Договор оферты · Правила пролёта</span>
+    </div>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   Появление блоков при прокрутке
+   ============================================================ */
+const io = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }
+}, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* Шапка */
+const nav = document.getElementById('nav');
+const onScrollNav = () => nav.classList.toggle('is-stuck', window.scrollY > 24);
+onScrollNav();
+window.addEventListener('scroll', onScrollNav, { passive: true });
+
+/* ============================================================
+   3D-сцена: город + пушистые облака из сфер
+   ============================================================ */
+const canvas = document.getElementById('scene');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+} catch (err) {
+  canvas.remove();
+}
+
+if (renderer) {
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const FOG_COLOR = new THREE.Color(0x0a0d1c);
+  scene.fog = new THREE.Fog(FOG_COLOR, 55, 210);
+
+  const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 700);
+  const CAM_HOME = new THREE.Vector3(0, 11, 34);
+  camera.position.copy(CAM_HOME);
+  const lookAt = new THREE.Vector3(0, 9, -18);
+  camera.lookAt(lookAt);
+
+  /* ---------- небо-градиент ---------- */
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(320, 32, 24),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      depthWrite: false,
+      fog: false,
+      uniforms: {
+        top:     { value: new THREE.Color(0x04050d) },
+        mid:     { value: new THREE.Color(0x121a3d) },
+        horizon: { value: new THREE.Color(0x4a3465) },
+        glow:    { value: new THREE.Color(0xff9d63) },
+        sunDir:  { value: new THREE.Vector3(-0.55, 0.12, -1).normalize() }
+      },
+      vertexShader: /* glsl */`
+        varying vec3 vDir;
+        void main(){
+          vDir = normalize(position);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }`,
+      fragmentShader: /* glsl */`
+        varying vec3 vDir;
+        uniform vec3 top, mid, horizon, glow, sunDir;
+        void main(){
+          float h = clamp(vDir.y * 0.5 + 0.5, 0.0, 1.0);
+          vec3 col = mix(horizon, mid, smoothstep(0.5, 0.78, h));
+          col = mix(col, top, smoothstep(0.7, 1.0, h));
+          col = mix(col, vec3(0.015, 0.02, 0.05), smoothstep(0.46, 0.0, h));
+          float d = max(dot(normalize(vDir), normalize(sunDir)), 0.0);
+          col += glow * pow(d, 8.0) * 0.55;
+          col += glow * pow(d, 2.0) * 0.10;
+          gl_FragColor = vec4(col, 1.0);
+        }`
+    })
+  );
+  scene.add(sky);
+
+  /* ---------- звёзды ---------- */
+  {
+    const N = 900, pos = new Float32Array(N * 3), ph = new Float32Array(N);
+    for (let i = 0; i < N; i++) {
+      const r = 240 + Math.random() * 60;
+      const t = Math.random() * Math.PI * 2;
+      const u = Math.random() * 0.62 + 0.06;
+      pos[i * 3]     = r * Math.cos(t) * Math.sqrt(1 - u * u);
+      pos[i * 3 + 1] = r * u;
+      pos[i * 3 + 2] = r * Math.sin(t) * Math.sqrt(1 - u * u);
+      ph[i] = Math.random();
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aPhase', new THREE.BufferAttribute(ph, 1));
+    const starMat = new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, fog: false,
+      uniforms: { uTime: { value: 0 } },
+      vertexShader: /* glsl */`
+        attribute float aPhase; varying float vA; uniform float uTime;
+        void main(){
+          vA = 0.35 + 0.65 * (0.5 + 0.5 * sin(uTime * 1.6 + aPhase * 6.283));
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = 1.7 * (300.0 / -mv.z);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: /* glsl */`
+        varying float vA;
+        void main(){
+          vec2 p = gl_PointCoord - 0.5;
+          float m = smoothstep(0.5, 0.0, length(p));
+          gl_FragColor = vec4(vec3(0.82, 0.88, 1.0), m * vA * 0.9);
+        }`
+    });
+    scene.add(new THREE.Points(g, starMat));
+    scene.userData.starMat = starMat;
+  }
+
+  /* ---------- луна ---------- */
+  const moon = new THREE.Mesh(
+    new THREE.SphereGeometry(7, 28, 20),
+    new THREE.MeshBasicMaterial({ color: 0xf3f0e2, fog: false })
+  );
+  moon.position.set(-62, 44, -150);
+  scene.add(moon);
+
+  /* ---------- мягкий радиальный спрайт (для дымки облаков и свечения) ---------- */
+  function softTexture(inner = 'rgba(255,255,255,0.85)') {
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, inner);
+    g.addColorStop(0.45, 'rgba(255,255,255,0.28)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g;
+    x.fillRect(0, 0, 128, 128);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+  const softTex = softTexture();
+
+  const moonGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: softTex, color: 0xbfd2ff, transparent: true, opacity: 0.55,
+    blending: THREE.AdditiveBlending, depthWrite: false, fog: false
+  }));
+  moonGlow.scale.setScalar(58);
+  moonGlow.position.copy(moon.position);
+  scene.add(moonGlow);
+
+  /* ---------- свет ---------- */
+  scene.add(new THREE.HemisphereLight(0x6f88d8, 0x1a1330, 1.05));
+  const moonLight = new THREE.DirectionalLight(0xc3d6ff, 1.5);
+  moonLight.position.set(-40, 46, -30);
+  scene.add(moonLight);
+  const cityLight = new THREE.DirectionalLight(0xffa76b, 0.75);
+  cityLight.position.set(24, 6, 30);
+  scene.add(cityLight);
+
+  /* ---------- город ---------- */
+  function windowTexture() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const x = c.getContext('2d');
+    x.fillStyle = '#0a0d18';
+    x.fillRect(0, 0, 64, 64);
+    for (let j = 0; j < 8; j++) {
+      for (let i = 0; i < 8; i++) {
+        if (Math.random() < 0.44) {
+          const warm = Math.random() > 0.28;
+          const a = 0.45 + Math.random() * 0.55;
+          x.fillStyle = warm ? `rgba(255,206,140,${a})` : `rgba(150,196,255,${a})`;
+          x.fillRect(i * 8 + 2, j * 8 + 2, 4, 4);
+        }
+      }
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.magFilter = THREE.NearestFilter;
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+  const baseWinTex = windowTexture();
+
+  const city = new THREE.Group();
+  scene.add(city);
+  const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+  const blinkers = [];
+
+  for (let gx = -6; gx <= 6; gx++) {
+    for (let gz = -7; gz <= 1; gz++) {
+      if (Math.random() < 0.24) continue;
+      const w = 4 + Math.random() * 5;
+      const d = 4 + Math.random() * 5;
+      const far = Math.abs(gz) > 4;
+      let h = 6 + Math.random() * (far ? 34 : 22);
+      if (Math.random() < 0.08) h *= 1.7;
+
+      const tex = baseWinTex.clone();
+      tex.needsUpdate = true;
+      tex.repeat.set(Math.max(1, Math.round(w / 2.4)), Math.max(1, Math.round(h / 3.2)));
+
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x121629,
+        map: tex,
+        emissiveMap: tex,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.85,
+        roughness: 0.92,
+        metalness: 0.05
+      });
+
+      const b = new THREE.Mesh(boxGeo, mat);
+      b.scale.set(w, h, d);
+      b.position.set(gx * 11 + (Math.random() - 0.5) * 4, h / 2, gz * 13 - 8 + (Math.random() - 0.5) * 5);
+      city.add(b);
+
+      if (h > 26 && Math.random() < 0.8) {
+        const beacon = new THREE.Mesh(
+          new THREE.SphereGeometry(0.34, 8, 8),
+          new THREE.MeshBasicMaterial({ color: 0xff5566 })
+        );
+        beacon.position.set(b.position.x, h + 1.4, b.position.z);
+        city.add(beacon);
+        blinkers.push({ mesh: beacon, phase: Math.random() * 6.28, speed: 1.2 + Math.random() * 1.4 });
+      }
+    }
+  }
+
+  /* земля */
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(600, 600),
+    new THREE.MeshStandardMaterial({ color: 0x06070f, roughness: 0.6, metalness: 0.35 })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.02;
+  scene.add(ground);
+
+  /* ---------- облака из сфер ---------- */
+  const puffGeo = [];
+  for (let k = 0; k < 5; k++) {
+    const g = new THREE.IcosahedronGeometry(1, 3);
+    const p = g.attributes.position;
+    const v = new THREE.Vector3();
+    const seed = k * 12.9898;
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i);
+      const n =
+        Math.sin(v.x * 2.1 + seed) * 0.5 +
+        Math.cos(v.y * 2.7 - seed) * 0.3 +
+        Math.sin(v.z * 3.3 + seed * 0.5) * 0.2;
+      v.multiplyScalar(1 + n * 0.13);
+      p.setXYZ(i, v.x, v.y, v.z);
+    }
+    g.computeVertexNormals();
+    puffGeo.push(g);
+  }
+
+  const cloudMats = [0xf3f6ff, 0xe6ecff, 0xffe9f2, 0xdfe7ff].map((c) =>
+    new THREE.MeshStandardMaterial({ color: c, roughness: 1, metalness: 0, flatShading: false })
+  );
+
+  const clouds = new THREE.Group();
+  scene.add(clouds);
+  const CLOUD_SPAN_X = 150;
+
+  function makeCloud(scaleBase) {
+    const g = new THREE.Group();
+    const mat = cloudMats[(Math.random() * cloudMats.length) | 0];
+    const puffs = 8 + ((Math.random() * 5) | 0);
+    for (let i = 0; i < puffs; i++) {
+      const m = new THREE.Mesh(puffGeo[(Math.random() * puffGeo.length) | 0], mat);
+      const s = 1.2 + Math.random() * 2.3;
+      m.scale.set(s * 1.25, s * 0.82, s);
+      m.position.set(
+        (Math.random() - 0.5) * 8.5,
+        (Math.random() - 0.5) * 2.0,
+        (Math.random() - 0.5) * 4.2
+      );
+      m.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+      g.add(m);
+    }
+    /* мягкая дымка вокруг формы */
+    for (let i = 0; i < 3; i++) {
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: softTex, color: 0xaebfe6, transparent: true,
+        opacity: 0.16 + Math.random() * 0.12, depthWrite: false
+      }));
+      sp.scale.setScalar(9 + Math.random() * 8);
+      sp.position.set((Math.random() - 0.5) * 7, (Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 3);
+      g.add(sp);
+    }
+    g.scale.setScalar(scaleBase);
+    return g;
+  }
+
+  const CLOUD_COUNT = 20;
+  for (let i = 0; i < CLOUD_COUNT; i++) {
+    const scale = 0.55 + Math.random() * 1.15;
+    const cl = makeCloud(scale);
+    cl.position.set(
+      (Math.random() - 0.5) * CLOUD_SPAN_X * 2,
+      15 + Math.random() * 22 - scale * 3,
+      -90 + Math.random() * 105
+    );
+    cl.userData = {
+      speed: 0.5 + Math.random() * 1.3,
+      bobPhase: Math.random() * 6.28,
+      bobAmp: 0.35 + Math.random() * 0.9,
+      baseY: cl.position.y,
+      drift: (Math.random() - 0.5) * 0.25,
+      tilt: (Math.random() - 0.5) * 0.05
+    };
+    clouds.add(cl);
+  }
+
+  /* ---------- ввод: мышь / палец / гиросклон ---------- */
+  const pointer = { x: 0, y: 0 };
+  const eased = { x: 0, y: 0 };
+  function setPointer(nx, ny) {
+    pointer.x = THREE.MathUtils.clamp(nx, -1, 1);
+    pointer.y = THREE.MathUtils.clamp(ny, -1, 1);
+  }
+  window.addEventListener('pointermove', (e) => {
+    setPointer((e.clientX / window.innerWidth) * 2 - 1, (e.clientY / window.innerHeight) * 2 - 1);
+  }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (t) setPointer((t.clientX / window.innerWidth) * 2 - 1, (t.clientY / window.innerHeight) * 2 - 1);
+  }, { passive: true });
+  window.addEventListener('deviceorientation', (e) => {
+    if (e.gamma == null) return;
+    setPointer(e.gamma / 40, (e.beta - 45) / 40);
+  }, { passive: true });
+
+  let scrollT = 0;
+  const heroEl = document.querySelector('.hero');
+  const updateScroll = () => {
+    const h = window.innerHeight || 1;
+    scrollT = THREE.MathUtils.clamp(window.scrollY / h, 0, 1.4);
+  };
+  updateScroll();
+  window.addEventListener('scroll', updateScroll, { passive: true });
+
+  /* ---------- ресайз ---------- */
+  function resize() {
+    const w = heroEl.clientWidth || window.innerWidth;
+    const h = heroEl.clientHeight || window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.fov = w < 640 ? 64 : 52;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* ---------- рендер только когда герой виден ---------- */
+  let visible = true;
+  new IntersectionObserver((es) => { visible = es[0].isIntersecting; }, { threshold: 0 }).observe(heroEl);
+  document.addEventListener('visibilitychange', () => { visible = !document.hidden && visible; });
+
+  /* ---------- цикл ---------- */
+  const clock = new THREE.Clock();
+  const tmp = new THREE.Vector3();
+
+  function frame() {
+    requestAnimationFrame(frame);
+    if (!visible) return;
+
+    const dt = Math.min(clock.getDelta(), 0.05);
+    const t = clock.elapsedTime;
+
+    /* плавное следящее движение камеры */
+    eased.x += (pointer.x - eased.x) * Math.min(1, dt * 2.6);
+    eased.y += (pointer.y - eased.y) * Math.min(1, dt * 2.6);
+
+    camera.position.x = CAM_HOME.x + eased.x * 6.5;
+    camera.position.y = CAM_HOME.y - eased.y * 3.2 + scrollT * 9;
+    camera.position.z = CAM_HOME.z - scrollT * 14;
+    tmp.set(lookAt.x + eased.x * 3.2, lookAt.y - eased.y * 1.6, lookAt.z);
+    camera.lookAt(tmp);
+    camera.rotation.z = -eased.x * 0.018;
+
+    /* дрейф облаков */
+    for (const cl of clouds.children) {
+      const u = cl.userData;
+      cl.position.x += u.speed * dt;
+      cl.position.z += u.drift * dt;
+      cl.position.y = u.baseY + Math.sin(t * 0.22 + u.bobPhase) * u.bobAmp;
+      /* мягкий наклон навстречу движению мыши */
+      cl.rotation.z += (u.tilt - eased.x * 0.06 - cl.rotation.z) * dt * 0.8;
+      cl.rotation.y += dt * 0.01;
+      if (cl.position.x > CLOUD_SPAN_X + 30) {
+        cl.position.x = -CLOUD_SPAN_X - 30;
+        cl.position.z = -90 + Math.random() * 105;
+      }
+    }
+
+    /* огоньки на зданиях */
+    for (const b of blinkers) {
+      const k = 0.5 + 0.5 * Math.sin(t * b.speed * 3 + b.phase);
+      b.mesh.material.color.setRGB(0.45 + k * 0.65, 0.06 + k * 0.08, 0.1 + k * 0.1);
+    }
+
+    if (scene.userData.starMat) scene.userData.starMat.uniforms.uTime.value = t;
+
+    renderer.render(scene, camera);
+  }
+
+  if (reduceMotion) {
+    renderer.render(scene, camera);
+  } else {
+    frame();
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Тихий час — тишина по подписке</title>
+<meta name="description" content="«Тихий час» — подписка на тишину. Минуты спокойствия доставляются туда, где шумно." />
+<style>
+  :root{
+    --bg:#07090c;
+    --bg-2:#0c1016;
+    --panel:#11161f;
+    --line:rgba(255,255,255,.09);
+    --txt:#e8ecf2;
+    --dim:#95a1b3;
+    --accent:#8fd6c2;
+    --accent-2:#7aa7d9;
+    --warm:#e0c48a;
+    --radius:18px;
+    --maxw:1180px;
+    --ease:cubic-bezier(.22,.7,.2,1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    font-weight:500;letter-spacing:-.015em;line-height:1.12;margin:0}
+  h1{font-size:clamp(2.6rem,7vw,5.4rem)}
+  h2{font-size:clamp(1.9rem,4.2vw,3.1rem)}
+  h3{font-size:clamp(1.15rem,2vw,1.4rem);line-height:1.3}
+  p{margin:0 0 1em}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:#06110d}
+
+  .wrap{width:min(var(--maxw),92vw);margin-inline:auto}
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);
+    font-weight:600;margin-bottom:1.1rem;display:flex;align-items:center;gap:.7rem;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:currentColor;opacity:.6}
+  .lead{color:var(--dim);font-size:clamp(1rem,1.35vw,1.18rem);max-width:56ch}
+
+  /* ---------- навигация ---------- */
+  header.nav{
+    position:fixed;inset:0 0 auto 0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:1rem min(4vw,2rem);
+    backdrop-filter:blur(14px);
+    background:linear-gradient(to bottom,rgba(7,9,12,.82),rgba(7,9,12,0));
+    transition:background .4s var(--ease),border-color .4s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  header.nav.solid{background:rgba(7,9,12,.86);border-bottom-color:var(--line)}
+  .brand{display:flex;align-items:center;gap:.65rem;font-weight:600;letter-spacing:.02em}
+  .brand .mark{width:26px;height:26px;flex:0 0 auto}
+  .brand small{display:block;font-weight:400;font-size:.66rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim)}
+  nav.links{display:flex;gap:1.9rem;font-size:.9rem;color:var(--dim)}
+  nav.links a{position:relative;padding:.2rem 0;transition:color .3s var(--ease)}
+  nav.links a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:1px;
+    background:var(--accent);transition:width .35s var(--ease)}
+  nav.links a:hover{color:var(--txt)}
+  nav.links a:hover::after{width:100%}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:.55rem;
+    padding:.72rem 1.35rem;border-radius:999px;font-size:.9rem;font-weight:600;
+    border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--txt);
+    cursor:pointer;transition:transform .3s var(--ease),background .3s var(--ease),
+      border-color .3s var(--ease),box-shadow .3s var(--ease);
+  }
+  .btn:hover{transform:translateY(-2px);background:rgba(143,214,194,.12);
+    border-color:rgba(143,214,194,.5);box-shadow:0 10px 30px -14px rgba(143,214,194,.6)}
+  .btn.primary{background:var(--accent);color:#061310;border-color:transparent}
+  .btn.primary:hover{background:#a6e5d3;box-shadow:0 14px 40px -14px rgba(143,214,194,.9)}
+  .btn.ghost{background:transparent}
+
+  /* ---------- первый экран ---------- */
+  .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;
+    isolation:isolate;overflow:hidden}
+  #scene{position:absolute;inset:0;z-index:-2}
+  #scene canvas{display:block;width:100%!important;height:100%!important}
+  .hero::after{
+    content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(120% 80% at 50% 10%,rgba(7,9,12,.1),rgba(7,9,12,.55) 62%,var(--bg) 99%),
+      linear-gradient(to bottom,rgba(7,9,12,.55) 0%,transparent 28%,transparent 55%,var(--bg) 98%);
+  }
+  .hero-inner{padding:min(14vh,8rem) 0 8vh;width:min(var(--maxw),92vw)}
+  .hero h1{max-width:16ch}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .hero .lead{margin-top:1.6rem}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2.2rem}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:2.4rem;margin-top:3.4rem;
+    padding-top:1.6rem;border-top:1px solid var(--line);color:var(--dim);font-size:.85rem}
+  .hero-meta b{display:block;font-family:Georgia,serif;font-size:1.6rem;color:var(--txt);
+    font-weight:400;letter-spacing:-.02em}
+  .scroll-hint{position:absolute;right:max(4vw,1.2rem);bottom:2rem;z-index:2;
+    writing-mode:vertical-rl;font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--dim);display:flex;align-items:center;gap:.9rem}
+  .scroll-hint::after{content:"";width:1px;height:56px;background:linear-gradient(var(--dim),transparent);
+    animation:drip 2.6s var(--ease) infinite}
+  @keyframes drip{0%{transform:scaleY(.2);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}
+    51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(.2);transform-origin:bottom}}
+
+  .breath{
+    position:absolute;left:max(4vw,1.2rem);bottom:2rem;z-index:2;display:flex;align-items:center;gap:.6rem;
+    font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+    background:rgba(7,9,12,.5);border:1px solid var(--line);border-radius:999px;padding:.4rem .85rem;
+    backdrop-filter:blur(8px);
+  }
+  .breath .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 12px var(--accent);transition:all .6s var(--ease)}
+  .breath.calm .dot{background:#6f7b8c;box-shadow:none;animation:none}
+  .breath.calm .dot{animation:none}
+  .breath .dot{animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.45;transform:scale(.8)}50%{opacity:1;transform:scale(1.35)}}
+
+  /* ---------- секции ---------- */
+  section{padding:clamp(5rem,11vw,9.5rem) 0;position:relative}
+  .section-head{max-width:62ch;margin-bottom:clamp(2.5rem,5vw,4rem)}
+  .rule{height:1px;background:var(--line);border:0;margin:0}
+
+  /* «Что мы делаем» */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .cell{background:var(--bg-2);padding:clamp(1.5rem,2.6vw,2.3rem);
+    transition:background .45s var(--ease),transform .45s var(--ease)}
+  .cell:hover{background:#141b25}
+  .cell .glyph{width:52px;height:52px;margin-bottom:1.4rem;color:var(--accent);
+    transition:transform .6s var(--ease),color .4s var(--ease)}
+  .cell:hover .glyph{transform:translateY(-4px) rotate(-4deg);color:var(--accent-2)}
+  .cell p{color:var(--dim);font-size:.95rem;margin:.7rem 0 0}
+
+  /* «Как это работает» */
+  .steps{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(2rem,6vw,5rem);align-items:start}
+  .steps-list{position:relative;padding-left:0;list-style:none;margin:0}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;
+    padding:1.9rem 0;border-top:1px solid var(--line)}
+  .step:last-child{border-bottom:1px solid var(--line)}
+  .step .num{font-family:Georgia,serif;font-size:.95rem;color:var(--accent);
+    border:1px solid rgba(143,214,194,.35);border-radius:50%;
+    width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto}
+  .step h3{margin-bottom:.35rem}
+  .step p{color:var(--dim);font-size:.95rem;margin:0}
+  .sticky-note{position:sticky;top:22vh}
+  .meter{margin-top:2rem;border:1px solid var(--line);border-radius:var(--radius);
+    padding:1.5rem;background:linear-gradient(160deg,#101720,#0a0d12)}
+  .meter .label{display:flex;justify-content:space-between;font-size:.74rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:.9rem}
+  .meter .track{height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+  .meter .fill{height:100%;width:12%;border-radius:99px;
+    background:linear-gradient(90deg,var(--warm),var(--accent));
+    transition:width 1.4s var(--ease)}
+  .meter.in .fill{width:84%}
+  .meter p{margin:1rem 0 0;font-size:.85rem;color:var(--dim)}
+
+  /* «Тарифы» */
+  #pricing{background:
+    radial-gradient(80% 60% at 50% 0%,rgba(122,167,217,.10),transparent 70%)}
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;align-items:stretch}
+  .plan{position:relative;border:1px solid var(--line);border-radius:var(--radius);
+    padding:clamp(1.6rem,2.4vw,2.2rem);background:rgba(17,22,31,.72);
+    display:flex;flex-direction:column;
+    transition:transform .5s var(--ease),border-color .5s var(--ease),box-shadow .5s var(--ease)}
+  .plan:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.22);
+    box-shadow:0 26px 60px -30px rgba(0,0,0,.9)}
+  .plan.feature{border-color:rgba(143,214,194,.45);
+    background:linear-gradient(170deg,rgba(143,214,194,.10),rgba(17,22,31,.9) 55%)}
+  .plan.feature::after{content:"чаще всего выбирают";position:absolute;top:-11px;left:50%;
+    translate:-50% 0;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+    background:var(--accent);color:#061310;padding:.25rem .8rem;border-radius:999px;font-weight:700;
+    white-space:nowrap}
+  .plan .tname{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+  .price{font-family:Georgia,serif;font-size:clamp(2.1rem,3.4vw,2.9rem);
+    letter-spacing:-.02em;margin:.7rem 0 .1rem;display:flex;align-items:baseline;gap:.35rem}
+  .price span{font-family:Inter,system-ui,sans-serif;font-size:.82rem;color:var(--dim);
+    letter-spacing:.04em}
+  .plan .incl{list-style:none;padding:0;margin:1.4rem 0 1.9rem;font-size:.93rem;color:var(--dim)}
+  .plan .incl li{display:flex;gap:.7rem;padding:.42rem 0;border-bottom:1px dashed rgba(255,255,255,.07)}
+  .plan .incl li:last-child{border-bottom:0}
+  .plan .incl svg{flex:0 0 auto;width:16px;height:16px;margin-top:.28rem;color:var(--accent)}
+  .plan .btn{justify-content:center;margin-top:auto}
+  .note{margin-top:1.6rem;font-size:.83rem;color:var(--dim);text-align:center}
+
+  /* «Отзывы» */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+  .quote{border:1px solid var(--line);border-radius:var(--radius);padding:1.8rem;
+    background:var(--bg-2);display:flex;flex-direction:column;gap:1.1rem;
+    transition:transform .5s var(--ease),background .5s var(--ease)}
+  .quote:hover{transform:translateY(-5px);background:#131a24}
+  .quote .mark{font-family:Georgia,serif;font-size:2.6rem;line-height:.6;color:var(--accent);opacity:.65}
+  .quote blockquote{margin:0;font-family:Georgia,serif;font-size:1.06rem;line-height:1.55}
+  .who{display:flex;align-items:center;gap:.8rem;margin-top:auto;padding-top:.4rem}
+  .who .av{width:40px;height:40px;border-radius:50%;flex:0 0 auto}
+  .who .nm{font-size:.9rem;font-weight:600}
+  .who .rl{font-size:.78rem;color:var(--dim)}
+  .stars{display:flex;gap:3px;color:var(--warm)}
+  .stars svg{width:13px;height:13px}
+
+  /* финальный блок */
+  .final{border-top:1px solid var(--line);
+    background:radial-gradient(70% 120% at 50% 100%,rgba(143,214,194,.13),transparent 65%)}
+  .final-box{border:1px solid var(--line);border-radius:calc(var(--radius) + 6px);
+    padding:clamp(2rem,5vw,4rem);background:rgba(9,12,17,.7);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem}
+  .final-box h2{max-width:22ch}
+
+  footer{border-top:1px solid var(--line);padding:3.5rem 0 2.5rem;font-size:.87rem;color:var(--dim)}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2.5rem}
+  .foot-grid h4{font-family:Inter,system-ui,sans-serif;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--txt);margin-bottom:.9rem;font-weight:600}
+  .foot-grid a{display:block;padding:.22rem 0;transition:color .3s var(--ease)}
+  .foot-grid a:hover{color:var(--accent)}
+  .foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
+    padding-top:1.5rem;border-top:1px solid var(--line);font-size:.78rem}
+
+  /* ---------- reveal ---------- */
+  [data-reveal]{opacity:0;transform:translateY(26px);
+    transition:opacity .9s var(--ease),transform .9s var(--ease)}
+  [data-reveal].in{opacity:1;transform:none}
+
+  /* ---------- адаптив ---------- */
+  @media (max-width:960px){
+    nav.links{display:none}
+    .grid-3{grid-template-columns:1fr 1fr}
+    .plans{grid-template-columns:1fr;gap:1.1rem}
+    .plan.feature::after{left:1.5rem;translate:0 0}
+    .quotes{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr}
+    .sticky-note{position:static}
+    .foot-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:600px){
+    body{font-size:16px}
+    .grid-3{grid-template-columns:1fr}
+    .hero-meta{gap:1.4rem}
+    .scroll-hint{display:none}
+    .foot-grid{grid-template-columns:1fr}
+    .btn{padding:.68rem 1.1rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+    html{scroll-behavior:auto}
+    [data-reveal]{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <circle cx="16" cy="16" r="14.5" stroke="#8fd6c2" stroke-opacity=".5"/>
+      <path d="M9 20.5c2.6-1.2 4.4-3.6 4.4-6.6S11.6 8.5 9 7.3" stroke="#8fd6c2" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M18.6 12.2c3.4 2.2 3.4 5.6 0 7.8" stroke="#7aa7d9" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="16" cy="16" r="1.6" fill="#8fd6c2"/>
+    </svg>
+    <span>Тихий час<small>тишина по подписке</small></span>
+  </a>
+  <nav class="links">
+    <a href="#services">Что мы делаем</a>
+    <a href="#how">Как это работает</a>
+    <a href="#pricing">Тарифы</a>
+    <a href="#reviews">Отзывы</a>
+  </nav>
+  <a class="btn primary" href="#pricing">Попробовать 7 минут</a>
+</header>
+
+<main id="top">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" aria-label="Тишина, которая наступает">
+    <div id="scene" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <div class="eyebrow">сервис №1 по доставке покоя</div>
+      <h1>Тишина приедет <em>куда угодно</em></h1>
+      <p class="lead" data-reveal>
+        Мы продаём минуты тишины и доставляем их туда, где шумно: в опенспейс,
+        в вагон электрички, в дом с маленьким соседом-перфоратором.
+        Подпишитесь — и тишина начнётся ровно в назначенное время.
+      </p>
+      <div class="hero-cta" data-reveal style="transition-delay:.12s">
+        <a class="btn primary" href="#pricing">Выбрать подписку</a>
+        <a class="btn ghost" href="#how">Как это устроено</a>
+      </div>
+      <div class="hero-meta" data-reveal style="transition-delay:.2s">
+        <div><b>2 314 900</b>минут доставлено</div>
+        <div><b>−41 дБ</b>среднее облегчение</div>
+        <div><b>96%</b>засыпают до конца минуты</div>
+      </div>
+    </div>
+
+    <div class="breath" id="breath"><span class="dot"></span><span id="breathTxt">облако дышит</span></div>
+    <div class="scroll-hint">листайте тише</div>
+  </section>
+
+  <!-- ================= ЧТО МЫ ДЕЛАЕМ ================= -->
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow" data-reveal>что мы делаем</div>
+        <h2 data-reveal style="transition-delay:.06s">Мы не глушим звук.<br />Мы возвращаем вам время.</h2>
+        <p class="lead" data-reveal style="transition-delay:.12s">
+          Каждый тариф — это не «набор услуг», а договорённость с реальностью
+          о том, когда в вашей жизни будет тихо.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <article class="cell" data-reveal>
+          <svg class="glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path d="M6 26c5 0 5-12 10-12s5 20 10 20 5-16 10-16 4 8 6 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M4 38h40" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="2 6"/>
+          </svg>
+          <h3>Доставка минут тишины</h3>
+          <p>Курьер спокойствия открывает для вас защищённый интервал: телефон молчит,
+            уведомления не приходят, коллеги обходят стороной. От 5 минут, шаг — минута.</p>
+        </article>
+
+        <article class="cell" data-reveal style="transition-delay:.08s">
+          <svg class="glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M24 14v10l7 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M24 3v5M24 40v5M3 24h5M40 24h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <h3>Календарь бесшумности</h3>
+          <p>Мы соглашаем ваш график с графиками соседей, семьи и офиса. Совпадения редкие,
+            но счастливые: все замолкают одновременно.</p>
+        </article>
+
+        <article class="cell" data-reveal style="transition-delay:.16s">
+          <svg class="glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path d="M10 34c0-9 6-14 14-14s14 5 14 14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M16 34c0-5 3.6-8 8-8s8 3 8 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M24 20V8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M18 38h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <h3>Анатомия шума</h3>
+          <p>Инженер разбирает ваш шум на составляющие: сосед, ремонтирующий жизнь;
+            совещание без повестки; холодильник, у которого есть мнение. Остаётся только ваше решение.</p>
+        </article>
+
+        <article class="cell" data-reveal>
+          <svg class="glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <rect x="8" y="12" width="32" height="24" rx="4" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M8 20h32" stroke="currentColor" stroke-width="1.7"/>
+            <circle cx="14" cy="16" r="1.4" fill="currentColor"/>
+            <path d="M16 28h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <h3>Тихие помещения в аренду</h3>
+          <p>Комнаты, в которых слышно, как растут мысли. Стены из плотной вежливости,
+            пол из войлока, мебель расставлена на безопасном расстоянии друг от друга.</p>
+        </article>
+
+        <article class="cell" data-reveal style="transition-delay:.08s">
+          <svg class="glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path d="M24 6l4.4 12.6L41 24l-12.6 5.4L24 42l-4.4-12.6L7 24l12.6-5.4z"
+              stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          </svg>
+          <h3>Дежурный шёпот</h3>
+          <p>Живой оператор, который скажет вашим гостям «уже поздно» именно тем тоном,
+            который вы не решались выбрать. Шесть оттенков шёпота в тарифе «Глубина».</p>
+        </article>
+
+        <article class="cell" data-reveal style="transition-delay:.16s">
+          <svg class="glyph" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path d="M12 36V16a6 6 0 0112 0v14a6 6 0 0012 0V12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <circle cx="12" cy="40" r="2.4" fill="currentColor"/>
+            <circle cx="36" cy="8" r="2.4" fill="currentColor"/>
+          </svg>
+          <h3>Отчётность по тишине</h3>
+          <p>Ежемесячный график: сколько тишины получено, сколько обещано, где произошла
+            утечка смеха. Всё в спокойных тонах, без резких диаграмм.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= КАК ЭТО РАБОТАЕТ ================= -->
+  <section id="how">
+    <div class="wrap">
+      <div class="steps">
+        <div class="sticky-note">
+          <div class="eyebrow" data-reveal>как это работает</div>
+          <h2 data-reveal style="transition-delay:.06s">Четыре шага<br />до тишины</h2>
+          <p class="lead" data-reveal style="transition-delay:.12s">
+            Процесс намеренно медленный. Мы не вершим дела быстро —
+            мы вершим их тихо.
+          </p>
+          <div class="meter" data-reveal="meter" style="transition-delay:.2s">
+            <div class="label"><span>уровень шума в вашей жизни</span><span id="meterVal">84%</span></div>
+            <div class="track"><div class="fill"></div></div>
+            <p>После подписки индикатор опускается сам. Мы проверили на 12 400 людях:
+              никто не заметил момента, когда стало тихо.</p>
+          </div>
+        </div>
+
+        <ol class="steps-list">
+          <li class="step" data-reveal>
+            <span class="num">01</span>
+            <div>
+              <h3>Вы описываете шум</h3>
+              <p>Короткая форма из трёх вопросов: где, когда и кто. Поля «почему именно сегодня»
+                нет — мы и так знаем, что сегодня.</p>
+            </div>
+          </li>
+          <li class="step" data-reveal style="transition-delay:.08s">
+            <span class="num">02</span>
+            <div>
+              <h3>Мы чертим карту тишины</h3>
+              <p>Находим в вашем дне слепые зоны: 6:40 утра, лифт на 14-й этаж,
+                пять секунд после «вопросов нет?». Именно туда и поедет заказ.</p>
+            </div>
+          </li>
+          <li class="step" data-reveal style="transition-delay:.16s">
+            <span class="num">03</span>
+            <div>
+              <h3>Тишина доставляется</h3>
+              <p>В назначенную минуту всё не то чтобы выключается — оно просто перестаёт
+                быть вашим делом. Уведомления складываются в вежливую очередь.</p>
+            </div>
+          </li>
+          <li class="step" data-reveal style="transition-delay:.24s">
+            <span class="num">04</span>
+            <div>
+              <h3>Вы оставляете отзыв шёпотом</h3>
+              <p>Форма отзыва намеренно тихая: буквы маленькие, звук выключен,
+                отправить можно только одним нажатием. Кричать не придётся.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ТАРИФЫ ================= -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow" data-reveal>тарифы</div>
+        <h2 data-reveal style="transition-delay:.06s">Цены указаны за минуту.<br />И это дёшево.</h2>
+        <p class="lead" data-reveal style="transition-delay:.12s">
+          Оплата по факту наступления тишины. Если шум победил — минута не списывается.
+        </p>
+      </div>
+
+      <div class="plans">
+        <article class="plan" data-reveal>
+          <div class="tname">Пауза</div>
+          <div class="price">0&nbsp;₽ <span>/ первые 7 минут</span></div>
+          <ul class="incl">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>7 минут тишины в месяц</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Доставка в пределах одной комнаты</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Одно «нет» в неделю от чужих планов</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Отчёт в одном спокойном предложении</li>
+          </ul>
+          <a class="btn" href="#top">Взять паузу</a>
+        </article>
+
+        <article class="plan feature" data-reveal style="transition-delay:.08s">
+          <div class="tname">Глубина</div>
+          <div class="price">19&nbsp;₽ <span>/ минута тишины</span></div>
+          <ul class="incl">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>До 180 минут в месяц</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Доставка по городу, включая электрички</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Дежурный шёпот по будням</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Календарь бесшумности для семьи</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Перенос минут на следующий месяц</li>
+          </ul>
+          <a class="btn primary" href="#top">Углубиться</a>
+        </article>
+
+        <article class="plan" data-reveal style="transition-delay:.16s">
+          <div class="tname">Абсолют</div>
+          <div class="price">6&nbsp;900&nbsp;₽ <span>/ месяц навсегда*</span></div>
+          <ul class="incl">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Неограниченные минуты, включая ночные</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Персональный инженер тишины</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Переговоры с соседями — наша забота</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Шесть оттенков шёпота, включая «тяжёлый»</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Гарантия: тише или вернём шум</li>
+          </ul>
+          <a class="btn" href="#top">Стать абсолютным</a>
+        </article>
+      </div>
+      <p class="note" data-reveal>* «навсегда» длится ровно до конца календарного месяца. Отмена — молча, за 0 минут до списания.</p>
+    </div>
+  </section>
+
+  <!-- ================= ОТЗЫВЫ ================= -->
+  <section id="reviews">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow" data-reveal>отзывы</div>
+        <h2 data-reveal style="transition-delay:.06s">Люди сказали мало.<br />Но по делу.</h2>
+      </div>
+
+      <div class="quotes">
+        <article class="quote" data-reveal>
+          <span class="mark">«</span>
+          <blockquote>Заказала 20 минут на вторник. Во вторник в доме не работал лифт,
+            не плакал ребёнок и даже совещание закончилось раньше. Я подозреваю совпадение,
+            но подписалась на год.</blockquote>
+          <div class="stars" aria-label="оценка 5 из 5">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+          </div>
+          <div class="who">
+            <svg class="av" viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="20" fill="#1b2530"/>
+              <circle cx="20" cy="15.5" r="6.5" fill="#8fd6c2" fill-opacity=".8"/>
+              <path d="M6 40c1.5-8.5 7-12.5 14-12.5S32.5 31.5 34 40z" fill="#8fd6c2" fill-opacity=".45"/>
+            </svg>
+            <div><div class="nm">Марина К.</div><div class="rl">бухгалтер, опенспейс на 64 человека</div></div>
+          </div>
+        </article>
+
+        <article class="quote" data-reveal style="transition-delay:.08s">
+          <span class="mark">«</span>
+          <blockquote>Купил «Абсолют» из вредности. Через месяц перфоратор у соседа
+            не замолчал — но я перестал его слышать. Считаю, что услуга оказана.</blockquote>
+          <div class="stars" aria-label="оценка 5 из 5">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+          </div>
+          <div class="who">
+            <svg class="av" viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="20" fill="#1b222d"/>
+              <circle cx="20" cy="15.5" r="6.5" fill="#7aa7d9" fill-opacity=".85"/>
+              <path d="M6 40c1.5-8.5 7-12.5 14-12.5S32.5 31.5 34 40z" fill="#7aa7d9" fill-opacity=".4"/>
+            </svg>
+            <div><div class="nm">Даниил Р.</div><div class="rl">фрилансер, 7-й этаж у шахты лифта</div></div>
+          </div>
+        </article>
+
+        <article class="quote" data-reveal style="transition-delay:.16s">
+          <span class="mark">«</span>
+          <blockquote>Дежурный шёпот — лучшее, что случалось с моей пятницей.
+            Оператор сказал гостям «уже поздно» так, что они ушли, извинившись перед стеной.</blockquote>
+          <div class="stars" aria-label="оценка 4 из 5">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+            <svg viewBox="0 0 16 16" fill="currentColor" fill-opacity=".28"><path d="M8 1l2 4.6 5 .4-3.8 3.2 1.2 4.8L8 11.4 3.6 14l1.2-4.8L1 6l5-.4z"/></svg>
+          </div>
+          <div class="who">
+            <svg class="av" viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="20" fill="#241f1b"/>
+              <circle cx="20" cy="15.5" r="6.5" fill="#e0c48a" fill-opacity=".85"/>
+              <path d="M6 40c1.5-8.5 7-12.5 14-12.5S32.5 31.5 34 40z" fill="#e0c48a" fill-opacity=".38"/>
+            </svg>
+            <div><div class="nm">Лидия Ш.</div><div class="rl">завуч, мама троих, собака</div></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ФИНАЛ ================= -->
+  <section class="final">
+    <div class="wrap">
+      <div class="final-box" data-reveal>
+        <div>
+          <div class="eyebrow">последний слайд</div>
+          <h2>Попробуйте семь минут. Если не понравится — мы шумно извинимся.</h2>
+        </div>
+        <a class="btn primary" href="#pricing" style="padding:1rem 2rem">Оформить тишину</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#top" style="margin-bottom:1rem">
+          <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <circle cx="16" cy="16" r="14.5" stroke="#8fd6c2" stroke-opacity=".5"/>
+            <path d="M9 20.5c2.6-1.2 4.4-3.6 4.4-6.6S11.6 8.5 9 7.3" stroke="#8fd6c2" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M18.6 12.2c3.4 2.2 3.4 5.6 0 7.8" stroke="#7aa7d9" stroke-width="1.4" stroke-linecap="round"/>
+            <circle cx="16" cy="16" r="1.6" fill="#8fd6c2"/>
+          </svg>
+          <span>Тихий час<small>тишина по подписке</small></span>
+        </a>
+        <p style="max-width:34ch;font-size:.85rem">Вымышленная компания с настоящими намерениями.
+          Никакой шум не пострадал при производстве этого сайта.</p>
+      </div>
+      <div>
+        <h4>Сервис</h4>
+        <a href="#services">Что мы делаем</a>
+        <a href="#how">Как это работает</a>
+        <a href="#pricing">Тарифы</a>
+        <a href="#reviews">Отзывы</a>
+      </div>
+      <div>
+        <h4>Документы</h4>
+        <a href="#top">Договор о молчании</a>
+        <a href="#top">Политика приватности</a>
+        <a href="#top">Карта тихих зон</a>
+        <a href="#top">Правила шёпота</a>
+      </div>
+      <div>
+        <h4>Связь</h4>
+        <a href="#top">пишите письмом</a>
+        <a href="#top">стучите негромко</a>
+        <a href="#top">звонить не надо</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2025 ООО «Тихий час». Все права защищены тишиной.</span>
+      <span>Сделано без единого внешнего изображения</span>
+    </div>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============ 3D: облако мягких частиц ============ */
+const mount = document.getElementById('scene');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(mount.clientWidth, mount.clientHeight);
+mount.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x07090c, 0.055);
+
+const camera = new THREE.PerspectiveCamera(52, mount.clientWidth / mount.clientHeight, 0.1, 120);
+camera.position.set(0, 0.4, 15);
+
+/* --- частицы --- */
+const COUNT = innerWidth < 700 ? 3200 : 7000;
+const pos = new Float32Array(COUNT * 3);
+const seed = new Float32Array(COUNT);
+const size = new Float32Array(COUNT);
+const tint = new Float32Array(COUNT);
+
+for (let i = 0; i < COUNT; i++) {
+  // форма: приплюснутый «кокон» из двух гауссовых скоплений + оболочка
+  const r = Math.pow(Math.random(), 0.55) * 8.2;
+  const th = Math.random() * Math.PI * 2;
+  const ph = Math.acos(2 * Math.random() - 1);
+  const squash = 0.62;
+  pos[i * 3 + 0] = r * Math.sin(ph) * Math.cos(th) * 1.25;
+  pos[i * 3 + 1] = r * Math.cos(ph) * squash + (Math.random() - 0.5) * 0.6;
+  pos[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th) * 0.85;
+  seed[i] = Math.random() * 100;
+  size[i] = 0.5 + Math.random() * 2.4;
+  tint[i] = Math.random();
+}
+
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+geo.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+geo.setAttribute('aTint', new THREE.BufferAttribute(tint, 1));
+
+const mat = new THREE.ShaderMaterial({
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  uniforms: {
+    uTime: { value: 0 },
+    uCalm: { value: 1 },       // 1 = полностью замерло, 0 = бурлит
+    uSize: { value: innerWidth < 700 ? 150 : 190 },
+    uPixel: { value: Math.min(devicePixelRatio, 2) },
+    uMouse: { value: new THREE.Vector3(0, 0, 0) }
+  },
+  vertexShader: /* glsl */`
+    attribute float aSeed;
+    attribute float aSize;
+    attribute float aTint;
+    uniform float uTime;
+    uniform float uCalm;
+    uniform float uSize;
+    uniform float uPixel;
+    uniform vec3 uMouse;
+    varying float vTint;
+    varying float vFade;
+    varying float vAlpha;
+
+    void main(){
+      vTint = aTint;
+      vec3 p = position;
+
+      // «дышащая» турбулентность, гаснущая вместе с uCalm
+      float t = uTime * 0.55;
+      float s = aSeed;
+      float energy = (1.0 - uCalm) * 1.0 + 0.04;
+
+      p.x += sin(t * 0.9 + s * 1.7) * 0.75 * energy;
+      p.y += cos(t * 1.15 + s * 2.3) * 0.62 * energy;
+      p.z += sin(t * 0.75 + s * 3.1) * 0.70 * energy;
+
+      // медленное круговое дрейфование (остаётся и в покое — очень тихое)
+      float a = t * 0.06 + s * 0.02;
+      float ca = cos(a), sa = sin(a);
+      p.xz = mat2(ca, -sa, sa, ca) * p.xz;
+
+      // мягкое отталкивание от курсора
+      vec3 toM = p - uMouse;
+      float d = length(toM);
+      float push = smoothstep(4.2, 0.0, d) * (1.25 - uCalm * 0.85);
+      p += normalize(toM + 0.0001) * push * 1.6;
+
+      // лёгкое «сжатие в кокон» при покое
+      p *= 1.0 - uCalm * 0.07;
+
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      float dist = -mv.z;
+      gl_Position = projectionMatrix * mv;
+
+      float ps = aSize * uSize * uPixel / dist;
+      gl_PointSize = clamp(ps, 1.0, 42.0);
+
+      vFade = 1.0 - smoothstep(9.0, 34.0, dist);
+      vAlpha = (0.22 + 0.55 * aSize / 2.9) * (1.0 + uCalm * 0.55);
+    }
+  `,
+  fragmentShader: /* glsl */`
+    precision mediump float;
+    varying float vTint;
+    varying float vFade;
+    varying float vAlpha;
+    uniform float uCalm;
+
+    void main(){
+      vec2 uv = gl_PointCoord - 0.5;
+      float r = length(uv);
+      if (r > 0.5) discard;
+      float glow = pow(smoothstep(0.5, 0.0, r), 2.2);
+
+      vec3 cool = vec3(0.56, 0.84, 0.76);   // мятная тишина
+      vec3 blue = vec3(0.48, 0.65, 0.85);   // сумерки
+      vec3 warm = vec3(0.88, 0.77, 0.55);   // тёплая пыль
+
+      vec3 c = mix(cool, blue, smoothstep(0.15, 0.7, vTint));
+      c = mix(c, warm, smoothstep(0.72, 1.0, vTint) * 0.75);
+      c = mix(c, vec3(0.72, 0.78, 0.86), uCalm * 0.35);
+
+      float a = glow * vAlpha * vFade * (0.55 + uCalm * 0.25);
+      gl_FragColor = vec4(c, a);
+    }
+  `
+});
+
+const cloud = new THREE.Points(geo, mat);
+scene.add(cloud);
+
+/* --- тонкие концентрические «кольца спокойствия» --- */
+const rings = new THREE.Group();
+for (let i = 0; i < 3; i++) {
+  const rad = 6.2 + i * 2.4;
+  const g = new THREE.RingGeometry(rad, rad + 0.012, 128);
+  const m = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(0x8fd6c2), transparent: true, opacity: 0.10 - i * 0.022,
+    side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending
+  });
+  const mesh = new THREE.Mesh(g, m);
+  mesh.rotation.x = -Math.PI / 2 + (i - 1) * 0.18;
+  mesh.userData.i = i;
+  rings.add(mesh);
+}
+scene.add(rings);
+
+/* --- мышь / гироскуролла --- */
+const pointer = new THREE.Vector2(0, 0);
+const target  = new THREE.Vector2(0, 0);
+let lastMove = performance.now();
+let activity = 0;            // 0..1 — сколько «шума» вносит курсор
+const breathEl = document.getElementById('breath');
+const breathTxt = document.getElementById('breathTxt');
+
+function poke(){
+  lastMove = performance.now();
+  activity = Math.min(1, activity + 0.35);
+}
+addEventListener('pointermove', (e) => {
+  target.x = (e.clientX / innerWidth) * 2 - 1;
+  target.y = -((e.clientY / innerHeight) * 2 - 1);
+  poke();
+}, { passive: true });
+addEventListener('pointerdown', poke, { passive: true });
+addEventListener('scroll', () => { activity = Math.min(1, activity + 0.12); }, { passive: true });
+
+const mouseWorld = new THREE.Vector3();
+
+/* --- анимация --- */
+const clock = new THREE.Clock();
+let heroVisible = true;
+const io = new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }, { threshold: 0.01 });
+io.observe(mount);
+
+let calmShown = null;
+function tick(){
+  const t = clock.getElapsedTime();
+  const idle = (performance.now() - lastMove) / 1000;
+
+  // затухание активности: курсор стоит -> облако успокаивается
+  activity = Math.max(0, activity - 0.012);
+  const calmTarget = reduce ? 1 : THREE.MathUtils.clamp(1 - activity, 0, 1);
+  mat.uniforms.uCalm.value += (calmTarget - mat.uniforms.uCalm.value) * 0.035;
+  mat.uniforms.uTime.value = t;
+
+  // указатель
+  pointer.lerp(target, 0.045);
+  camera.position.x += (pointer.x * 1.6 - camera.position.x) * 0.035;
+  camera.position.y += (0.4 + pointer.y * 0.9 - camera.position.y) * 0.035;
+  camera.lookAt(0, 0, 0);
+
+  mouseWorld.set(pointer.x * 9, pointer.y * 5.2, 1.5);
+  mat.uniforms.uMouse.value.lerp(mouseWorld, 0.08);
+
+  cloud.rotation.y = t * 0.02;
+  rings.children.forEach((r, i) => {
+    r.rotation.z = t * (0.02 + i * 0.008) * (i % 2 ? -1 : 1);
+    const pulse = 1 + Math.sin(t * 0.6 + i) * 0.02 * (1 - mat.uniforms.uCalm.value);
+    r.scale.setScalar(pulse);
+    r.material.opacity = (0.11 - i * 0.024) + (1 - mat.uniforms.uCalm.value) * 0.05;
+  });
+
+  // статус
+  const calm = mat.uniforms.uCalm.value > 0.82 && idle > 1.2;
+  if (calm !== calmShown) {
+    calmShown = calm;
+    breathEl.classList.toggle('calm', calm);
+    breathTxt.textContent = calm ? 'облако замерло' : 'облако дышит';
+  }
+
+  if (heroVisible) renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+tick();
+
+/* --- ресайз --- */
+let rt;
+addEventListener('resize', () => {
+  clearTimeout(rt);
+  rt = setTimeout(() => {
+    const w = mount.clientWidth, h = mount.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+    mat.uniforms.uPixel.value = Math.min(devicePixelRatio, 2);
+    mat.uniforms.uSize.value = innerWidth < 700 ? 150 : 190;
+  }, 140);
+});
+
+/* ============ появление при прокрутке ============ */
+const revealIO = new IntersectionObserver((entries) => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      en.target.classList.add('in');
+      revealIO.unobserve(en.target);
+    }
+  });
+}, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+document.querySelectorAll('[data-reveal]').forEach(el => revealIO.observe(el));
+
+/* индикатор шума */
+const meter = document.querySelector('[data-reveal="meter"]');
+const meterVal = document.getElementById('meterVal');
+const meterIO = new IntersectionObserver(([e]) => {
+  if (!e.isIntersecting) return;
+  meter.classList.add('in');
+  let v = 84;
+  const iv = setInterval(() => {
+    v = Math.max(9, v - 3);
+    meterVal.textContent = v + '%';
+    if (v <= 9) clearInterval(iv);
+  }, 90);
+  meterIO.disconnect();
+}, { threshold: 0.4 });
+if (meter && meterVal) meterIO.observe(meter);
+
+/* шапка при прокрутке */
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('solid', scrollY > 40);
+onScroll();
+addEventListener('scroll', onScroll, { passive: true });
+</script>
+</body>
+</html>
