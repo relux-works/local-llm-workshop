@@ -92,7 +92,7 @@ llama-server -m Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00004.gguf -c 262144 -np 1
    ```bash
    # скопировать scripts/ на машину, затем
    bash scripts/node-setup.sh                 # готовая сборка llama.cpp + модели, ~5-10 минут
-   bash scripts/node-serve.sh flashnext-par 6 # 6 параллельных слотов по 131k
+   bash scripts/node-serve.sh flashnext-par 6 # 6 параллельных слотов, общий KV-кэш (--kv-unified)
    ```
 4. С ноутбука — туннель. Сервер слушает только localhost машины, наружу ничего не открыто:
    ```bash
@@ -124,6 +124,8 @@ llama-server -m Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00004.gguf -c 262144 -np 1
 Pi для прогретой сессии запускается из `~/workshop`: сессия собиралась там, а Pi пишет текущую папку в системный промпт. Другая папка — другой префикс, и модель перечитывает все 200 тысяч токенов.
 
 `6-hybrid.sh` берёт контекст из `ctx/ctx50k.md` (`scripts/build-ctx.sh 50k`), имена сессии и слота уникальны для каждого запуска (`hybrid-ЧЧММСС`), прогрев идёт в свободный слот узла, а шаги печатают время: чтение в облаке, сохранение, скачивание, подъём на Маке. Адрес узла — в `~/workshop/node.env` (образец — `presenter/mac/node.env.example`).
+
+Узел должен работать с общим KV-кэшем (`--kv-unified`, так запускает `node-serve.sh flashnext-par`). Без него сервер с несколькими слотами хранит кэш отдельными потоками, и Мак с одним слотом отказывается поднимать сохранённое состояние: `llama_state_seq_load_file: n_stream mismatch`. Так упал первый прогон на репетиции 12 ноября; с `--kv-unified` слот поднялся, и Pi продолжил локально на ~30 ток/с.
 
 **Ноутбук ведущего (облако)**: `presenter/air/*` в `~/workshop-cloud`, рядом `node.env` с адресом узла (образец — `node.env.example`). Скрипты ждут `scripts/air-cloud.sh` в `~/workshop-cloud/cloud/scripts/`, задания — в `~/workshop-cloud/cloud/prompts/`.
 

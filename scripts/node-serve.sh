@@ -10,7 +10,7 @@ FN=$W/models/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00004.gguf
 case "$1" in
   q27b)          M=$W/models/Qwen3.8-27B-Q4_K_M.gguf; A=(-c 262144 -np 1) ;;
   flashnext)     M=$FN; A=(-c 262144 -np 1) ;;
-  flashnext-par) N=${2:-6}; M=$FN; A=(-c $((131072*N)) -np $N) ;;
+  flashnext-par) N=${2:-6}; M=$FN; A=(-c $((131072*N)) -np $N --kv-unified) ;;
   *) echo "usage: $0 q27b|flashnext|flashnext-par N"; exit 2 ;;
 esac
 mkdir -p $W/slots $W/logs
