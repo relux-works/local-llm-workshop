@@ -2,7 +2,7 @@
 # llama-server on the GPU node, same build (b12317) and flags as the Mac. Logs to /root/ws/logs/server-<mode>.log.
 # Usage: node-serve.sh q27b            one slot, 262,144 tokens (fills slots for the Mac)
 #        node-serve.sh flashnext       one slot, 262,144 tokens (fills slots for the Mac)
-#        node-serve.sh flashnext-par N N parallel slots of 131,072 tokens (the cloud act)
+#        node-serve.sh flashnext-par N N parallel slots sharing one unified KV cache of 131,072*N tokens (the cloud act)
 set -eu
 W=/root/ws; BIN=$(dirname "$(find $W/bin -name llama-server -type f | head -1)")
 export LD_LIBRARY_PATH=$BIN:${LD_LIBRARY_PATH:-}
